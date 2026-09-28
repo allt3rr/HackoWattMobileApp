@@ -26,6 +26,7 @@ import {
 } from '@/constants/theme';
 import { useApiQuery } from '@/hooks/useApi';
 import { ScheduleZone } from '@/types/api';
+import { safeString, safeToFixed } from '@/utils/formatters';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -132,7 +133,7 @@ export default function DashboardScreen() {
                         styles.rateValue,
                         { color: getPriceColor(currentZone) },
                       ]}>
-                      {currentPrice.toFixed(3)}
+                      {safeToFixed(currentPrice, 3)}
                     </Text>
                     <Text style={[styles.rateUnit, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                       € / kWh
@@ -158,11 +159,11 @@ export default function DashboardScreen() {
                         styles.instantValue,
                         { color: isDark ? Palette.chartreuse : Palette.sageGreen },
                       ]}>
-                      {lastReading.total_kwh} kWh
+                      {safeToFixed(lastReading.total_kwh, 2)} kWh
                     </Text>
-                    {lastReading.temperature_c !== undefined ? (
+                    {lastReading.temperature_c != null ? (
                       <Text style={[styles.instantTemp, { color: Palette.radioactiveGrass }]}>
-                        Temp: {lastReading.temperature_c} °C
+                        Temp: {safeToFixed(lastReading.temperature_c, 1)} °C
                       </Text>
                     ) : null}
                   </View>
@@ -196,11 +197,11 @@ export default function DashboardScreen() {
                   </View>
                   <StatusBadge
                     variant="yellow"
-                    label={`${nextPeak.timestamp.slice(11, 16)} (~${nextPeak.total_kwh} kWh)`}
+                    label={`${nextPeak.timestamp ? nextPeak.timestamp.slice(11, 16) : ''} (~${safeToFixed(nextPeak.total_kwh, 2)} kWh)`}
                   />
                 </View>
                 <Text style={[styles.peakAlertText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
-                  {nextPeak.explanation}
+                  {safeString(nextPeak.explanation, 'Wykryto szczyt obciążenia.')}
                 </Text>
                 <View style={styles.peakAlertFooter}>
                   <Pressable onPress={() => router.push('/devices')}>
@@ -222,22 +223,22 @@ export default function DashboardScreen() {
             <View style={styles.metricsRow}>
               <MetricTile
                 label="Ostatnie 24h"
-                value={`${summary.history_last_24h_kwh?.toFixed(1) ?? 0}`}
+                value={safeToFixed(summary.history_last_24h_kwh, 1)}
                 unit="kWh"
                 subtitle="Suma zużycia z doby wstecz"
                 trend="down"
               />
               <MetricTile
                 label="Prognoza 24h"
-                value={`${summary.forecast_next_24h_kwh?.toFixed(1) ?? 0}`}
+                value={safeToFixed(summary.forecast_next_24h_kwh, 1)}
                 unit="kWh"
                 subtitle="Szacowane zapotrzebowanie"
                 accentColor={Palette.radioactiveGrass}
               />
               <MetricTile
                 label="PV pokrycie"
-                value={`${summary.pv_preview?.typical_annual_coverage_percent?.toFixed(0) ?? 33}%`}
-                subtitle={`Optymalne: ${summary.pv_preview?.optimized_annual_coverage_percent?.toFixed(0) ?? 39}%`}
+                value={`${safeToFixed(summary.pv_preview?.typical_annual_coverage_percent, 0, '33')}%`}
+                subtitle={`Optymalne: ${safeToFixed(summary.pv_preview?.optimized_annual_coverage_percent, 0, '39')}%`}
                 accentColor={isDark ? Palette.chartreuse : Palette.sageGreen}
               />
             </View>
@@ -261,7 +262,7 @@ export default function DashboardScreen() {
                   </View>
                   <View style={styles.dominantKwhBadge}>
                     <Text style={styles.dominantKwhText}>
-                      {dominant.kwh} kWh
+                      {safeToFixed(dominant.kwh, 2)} kWh
                     </Text>
                   </View>
                 </View>

@@ -19,6 +19,7 @@ import {
     PvSimulationParams,
     PvSimulationResponse,
     PvVariantsResponse,
+    ScenariosListResponse,
     SmartScheduleTodayResponse,
     SystemAssumptionsResponse,
     SystemMetricsResponse,
@@ -109,12 +110,12 @@ export const hackoWattApi = {
       '/api/v1/pv/simulate/',
       params
         ? {
-            kwp: params.kwp,
-            variantA_pvKwp: params.variantA_pvKwp,
-            variantA_batteryKwh: params.variantA_batteryKwh,
-            variantB_pvKwp: params.variantB_pvKwp,
-            variantB_batteryKwh: params.variantB_batteryKwh,
-            annualConsumptionKwh: params.annualConsumptionKwh,
+            kwp: params.kwp ?? params.variantA_pvKwp,
+            month: params.month,
+            magazyn_kwh: params.magazyn_kwh ?? params.variantA_batteryKwh,
+            magazyn_moc_kw: params.magazyn_moc_kw,
+            magazyn_koszt_eur: params.magazyn_koszt_eur,
+            include_week_profile: params.include_week_profile,
           }
         : undefined
     );
@@ -157,5 +158,13 @@ export const hackoWattApi = {
    */
   getSystemMetrics: (): Promise<ApiResponse<SystemMetricsResponse>> => {
     return apiClient.get<SystemMetricsResponse>('/api/v1/system/metrics/');
+  },
+
+  /**
+   * 13. GET /api/v1/scenarios/
+   * Lista 5 scenariuszy symulacji z flagami krajów.
+   */
+  getScenarios: (): Promise<ApiResponse<ScenariosListResponse>> => {
+    return apiClient.get<ScenariosListResponse>('/api/v1/scenarios/');
   },
 };

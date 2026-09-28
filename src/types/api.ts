@@ -1,15 +1,35 @@
 /**
  * HackoWatt Energy Management API - Strong TypeScript Contracts
- * Matching live Django backend endpoints schema.
+ * Fully typed against live Django REST endpoints.
  */
 
 // ==========================================
-// 1. Primitive Branded Types & Basic Enums
+// 1. Primitive Types & Basic Enums
 // ==========================================
 
 export type ScheduleZone = 'green' | 'yellow' | 'red';
 export type RateRating = 'cheap' | 'moderate' | 'expensive';
 export type ForecastHorizon = 24 | 72 | 168;
+
+export interface ScenarioMetadata {
+  id: number;
+  name: string;
+  title?: string;
+  city: string;
+  city_short?: string;
+  country_code?: string;
+  flag?: string;
+  lat?: number;
+  lon?: number;
+  timezone?: string;
+  household?: {
+    residents_count?: number;
+    profile?: string;
+    heating_type?: string;
+    [key: string]: unknown;
+  };
+  is_active?: boolean;
+}
 
 // ==========================================
 // 2. Dashboard Summary (GET /api/v1/dashboard/summary/)
@@ -18,7 +38,7 @@ export type ForecastHorizon = 24 | 72 | 168;
 export interface DashboardLastReading {
   timestamp: string;
   total_kwh: number;
-  temperature_c: number;
+  temperature_c: number | null;
   dominant_category: {
     key: string;
     label: string;
@@ -32,7 +52,7 @@ export interface DashboardTariff {
   price_eur: number;
   period_label: string;
   period_color: ScheduleZone;
-  period_advice: string;
+  period_advice?: string;
   currency: string;
 }
 
@@ -49,17 +69,26 @@ export interface DashboardPvPreview {
 }
 
 export interface DashboardSummaryResponse {
+  scenario?: ScenarioMetadata;
   last_reading: DashboardLastReading;
   tariff: DashboardTariff;
   history_last_24h_kwh: number;
   forecast_next_24h_kwh: number;
-  next_peak: DashboardNextPeak;
+  next_peak: DashboardNextPeak | null;
   pv_preview: DashboardPvPreview;
 }
 
 // ==========================================
 // 3. Smart Schedule Today (GET /api/v1/smart-schedule/today/)
 // ==========================================
+
+export interface CurrentHourStatus {
+  hour: number;
+  status_code: ScheduleZone;
+  status_title: string;
+  price_per_kwh: number;
+  currency: string;
+}
 
 export interface ScheduleTimelineSlot {
   hour: number;
@@ -68,7 +97,7 @@ export interface ScheduleTimelineSlot {
   badge: string;
   price_per_kwh: number;
   is_current: boolean;
-  recommended_action: string;
+  recommended_action?: string;
 }
 
 export interface ScheduleWindowItem {
@@ -80,59 +109,71 @@ export interface ScheduleWindowItem {
 }
 
 export interface SmartScheduleTodayResponse {
-  current_hour: number;
-  best_windows: {
+  scenario?: ScenarioMetadata;
+  current_hour: number | CurrentHourStatus;
+  lowest_tariff_hours?: number[];
+  highest_tariff_hours?: number[];
+  timeline: ScheduleTimelineSlot[];
+  best_windows?: {
     day_solar_window: ScheduleWindowItem;
     night_valley_window: ScheduleWindowItem;
     peak_avoid_window: ScheduleWindowItem;
   };
-  tips_by_generation: {
+  tips_by_generation?: {
     dla_dziadkow: string;
     dla_mlodziezy: string;
     dla_rodzicow: string;
   };
-  timeline: ScheduleTimelineSlot[];
 }
 
 // ==========================================
-// 4. Device Guidance & Shift Simulation (GET /api/v1/devices/guidance/, shift-simulation)
+// 4. Device Guidance & Shift Simulation
 // ==========================================
 
 export interface DeviceGuidanceItem {
   device: string;
-  icon: string;
-  energy_per_cycle_kwh: number;
-  best_hours: string;
-  worst_hours: string;
-  annual_savings_potential_eur: number;
-  tip_pl: string;
-  target_group: string;
+  annual_events?: number | null;
+  annual_energy_kwh: number;
+  energy_per_cycle_kwh?: number | null;
+  energy_started_outside_pv_window_kwh?: number | null;
+  // UI enrichment fallbacks
+  icon?: string;
+  best_hours?: string;
+  worst_hours?: string;
+  annual_savings_potential_eur?: number | null;
+  tip_pl?: string;
+  target_group?: string;
 }
 
 export interface DeviceGuidanceResponse {
-  currency: string;
+  scenario?: ScenarioMetadata;
+  currency?: string;
   devices: DeviceGuidanceItem[];
+  pv_window?: string;
 }
 
 export interface DeviceShiftRequest {
   device: string;
   original_hour: number;
   target_hour: number;
+  energy_kwh?: number;
   cycles_per_week?: number;
 }
 
 export interface DeviceShiftResponse {
+  scenario?: ScenarioMetadata;
   device: string;
   energy_kwh: number;
   original_hour: number;
-  target_hour: number;
   original_price_eur: number;
-  target_price_eur: number;
   original_cost_eur: number;
+  target_hour: number;
+  target_price_eur: number;
   target_cost_eur: number;
   savings_per_cycle_eur: number;
   estimated_annual_cycles: number;
   estimated_annual_savings_eur: number;
+  annual_cycles_source?: string;
   in_night_valley: boolean;
   in_pv_window: boolean;
   recommendation: string;
@@ -153,10 +194,11 @@ export interface TariffRecommendationWindow {
   start_hour: number;
   end_hour: number;
   price_per_kwh: number;
-  tip: string;
+  tip?: string;
 }
 
 export interface TariffInfoResponse {
+  scenario?: ScenarioMetadata;
   currency: string;
   current_hour: number;
   current_price_eur: number;
@@ -169,22 +211,14 @@ export interface TariffInfoResponse {
 }
 
 // ==========================================
-// 6. Consumption History & Forecast (GET /api/v1/consumption/history/, forecast/)
+// 6. Consumption History & Forecast
 // ==========================================
 
 export interface ConsumptionHistoryRecord {
   timestamp: string;
   total_kwh: number;
-  categories: {
-    Baza_kWh: number;
-    Ogrzewanie_kWh: number;
-    Oswietlenie_kWh: number;
-    Gotowanie_kWh: number;
-    RTV_PC_kWh: number;
-    Duze_AGD_kWh: number;
-    [key: string]: number;
-  };
-  temperature_c: number;
+  categories: Partial<Record<string, number>>;
+  temperature_c: number | null;
   events: string;
 }
 
@@ -198,6 +232,7 @@ export interface ConsumptionHistoryPagination {
 }
 
 export interface ConsumptionHistoryResponse {
+  scenario?: ScenarioMetadata;
   summary: {
     start: string;
     end: string;
@@ -225,16 +260,17 @@ export interface ForecastPeak {
 export interface ForecastItem {
   timestamp: string;
   total_kwh: number;
-  categories: Record<string, number>;
+  categories: Partial<Record<string, number>>;
   weather: {
-    temperature_c: number;
-    cloud_cover_percent: number;
-    radiation_w_m2: number;
+    temperature_c: number | null;
+    cloud_cover_percent: number | null;
+    radiation_w_m2: number | null;
   };
   tariff_price_eur: number;
 }
 
 export interface ConsumptionForecastResponse {
+  scenario?: ScenarioMetadata;
   categories_totals: Record<string, number>;
   horizon_hours: number;
   total_kwh: number;
@@ -253,7 +289,7 @@ export interface PvVariantResult {
   grid_kwh: number;
   coverage_percent: number;
   savings_eur: number;
-  payback_years: number;
+  payback_years: number | null;
 }
 
 export interface PvDeviceRecommendation {
@@ -265,6 +301,11 @@ export interface PvDeviceRecommendation {
 
 export interface PvSimulationParams {
   kwp?: number;
+  month?: number;
+  magazyn_kwh?: number;
+  magazyn_moc_kw?: number;
+  magazyn_koszt_eur?: number;
+  include_week_profile?: boolean;
   variantA_pvKwp?: number;
   variantA_batteryKwh?: number;
   variantB_pvKwp?: number;
@@ -273,8 +314,12 @@ export interface PvSimulationParams {
 }
 
 export interface PvSimulationResponse {
+  scenario?: ScenarioMetadata;
   kwp: number;
   currency: string;
+  storage_capacity_kwh?: number;
+  storage_power_kw?: number;
+  investment_eur?: number;
   annual_consumption_kwh: number;
   annual_production_kwh: number;
   variant_a: PvVariantResult;
@@ -282,9 +327,10 @@ export interface PvSimulationResponse {
   optimization_gain: {
     additional_self_kwh: number;
     additional_savings_eur: number;
-    payback_shortened_years: number;
+    payback_shortened_years: number | null;
   };
-  device_recommendations: PvDeviceRecommendation[];
+  device_recommendations?: PvDeviceRecommendation[];
+  week_profile?: unknown;
 }
 
 export interface PvVariantTableItem {
@@ -294,13 +340,14 @@ export interface PvVariantTableItem {
   coverage_b_percent: number;
   savings_a_eur: number;
   savings_b_eur: number;
-  payback_a_years: number;
-  payback_b_years: number;
+  payback_a_years: number | null;
+  payback_b_years: number | null;
   grid_a_kwh: number;
   grid_b_kwh: number;
 }
 
 export interface PvVariantsResponse {
+  scenario?: ScenarioMetadata;
   currency: string;
   variants: PvVariantTableItem[];
 }
@@ -325,16 +372,18 @@ export interface FlexibleEventsParams {
 }
 
 export interface FlexibleEventsResponse {
+  scenario?: ScenarioMetadata;
   pagination: ConsumptionHistoryPagination;
   items: FlexibleEventRecord[];
-  device_filter?: string;
+  device_filter?: string | null;
 }
 
 // ==========================================
-// 9. System Assumptions & Metrics (GET /api/v1/system/assumptions/, metrics/)
+// 9. System Assumptions & Metrics
 // ==========================================
 
 export interface SystemAssumptionsResponse {
+  scenario?: ScenarioMetadata;
   location: string;
   household: {
     residents_count: number;
@@ -367,6 +416,7 @@ export interface SystemAssumptionsResponse {
 }
 
 export interface SystemMetricsResponse {
+  scenario?: ScenarioMetadata;
   godzin: number;
   mae_baseline: number;
   mae_model: number;
@@ -378,7 +428,16 @@ export interface SystemMetricsResponse {
 }
 
 // ==========================================
-// 10. API Client Response and Error Wrappers
+// 10. Scenarios List (GET /api/v1/scenarios/)
+// ==========================================
+
+export interface ScenariosListResponse {
+  active_scenario_id: number;
+  scenarios: ScenarioMetadata[];
+}
+
+// ==========================================
+// 11. API Client Response and Error Wrappers
 // ==========================================
 
 export type ApiResponse<T> =

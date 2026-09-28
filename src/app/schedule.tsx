@@ -18,16 +18,50 @@ import { Card } from '@/components/ui/Card';
 import { ErrorStateCard } from '@/components/ui/ErrorStateCard';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import {
-  BottomTabInset,
-  MaxContentWidth,
-  Palette,
-  Spacing,
-} from '@/constants/theme';
+import { BottomTabInset, MaxContentWidth, Palette, Spacing } from '@/constants/theme';
 import { useApiQuery } from '@/hooks/useApi';
 import { ScheduleTimelineSlot } from '@/types/api';
+import { extractHour, safeString, safeToFixed } from '@/utils/formatters';
 
 type AudienceKey = 'dziadkowie' | 'mlodziez' | 'rodzice';
+
+const DEFAULT_TIPS_BY_GENERATION = {
+  dziadkowie:
+    'Dziadkowie w domu (09:00–14:00): To idealny czas na gotowanie, pieczenie, pranie i zmywanie. Energia słoneczna PV pokrywa większość bieżącego zapotrzebowania domu.',
+  mlodziez:
+    'Młodzież i dzieci (po 15:00): Unikaj jednoczesnego włączania wielu urządzeń. Komputery i konsole zużywają niewiele, ale dogrzewacze czy czajnik potęgują drogi szczyt.',
+  rodzice:
+    'Pracujący rodzice (wieczór i rano): Korzystaj z funkcji opóźnionego startu w zmywarkach i pralkach na nocną dolinę (00:00–06:00) lub na godziny południowe.',
+};
+
+const DEFAULT_BEST_WINDOWS = {
+  day_solar_window: {
+    label: 'Okno słoneczne i dzienne',
+    hours: '09:00 – 15:00',
+    for_who: 'Dziadkowie i osoby pracujące zdalnie',
+    recommended_devices: ['Pralka', 'Zmywarka', 'Suszarka'],
+  },
+  night_valley_window: {
+    label: 'Nocna dolina taryfowa',
+    hours: '00:00 – 06:00',
+    for_who: 'Pracujący rodzice (timer w AGD, ładowanie EV)',
+  },
+  peak_avoid_window: {
+    label: 'Szczyt popołudniowy (najdrożej)',
+    hours: '17:00 – 21:00',
+    advice: 'Unikaj jednoczesnego uruchamiania płyty indukcyjnej, piekarnika i pralki.',
+  },
+};
+
+function getSlotActionFallback(statusCode: string): string {
+  if (statusCode === 'green') {
+    return 'Zielona strefa (najtańszy prąd / PV). Uruchamiaj pralkę, zmywarkę, ładowanie urządzeń.';
+  }
+  if (statusCode === 'yellow') {
+    return 'Żółta strefa (stawka pośrednia). Standardowa praca urządzeń, optymalizuj zużycie tła.';
+  }
+  return 'Czerwona strefa (drogi szczyt). Ogranicz pracę urządzeń o dużej mocy (piekarnik, suszarka, czajnik).';
+}
 
 export default function ScheduleScreen() {
   const isDark = useColorScheme() === 'dark';
@@ -52,18 +86,18 @@ export default function ScheduleScreen() {
     await Promise.all([refetchSchedule(), refetchTariffs()]);
   };
 
-  const currentHourNow = schedule?.current_hour ?? new Date().getHours();
+  const currentHourNow = extractHour(schedule?.current_hour);
   const timeline = schedule?.timeline || [];
 
   const tips = schedule?.tips_by_generation;
   const currentTipText =
     selectedAudience === 'dziadkowie'
-      ? tips?.dla_dziadkow
+      ? safeString(tips?.dla_dziadkow, DEFAULT_TIPS_BY_GENERATION.dziadkowie)
       : selectedAudience === 'mlodziez'
-      ? tips?.dla_mlodziezy
-      : tips?.dla_rodzicow;
+      ? safeString(tips?.dla_mlodziezy, DEFAULT_TIPS_BY_GENERATION.mlodziez)
+      : safeString(tips?.dla_rodzicow, DEFAULT_TIPS_BY_GENERATION.rodzice);
 
-  const bestWindows = schedule?.best_windows;
+  const bestWindows = schedule?.best_windows ?? DEFAULT_BEST_WINDOWS;
 
   return (
     <SafeAreaView
@@ -200,7 +234,7 @@ export default function ScheduleScreen() {
                                 : '#991B1B',
                           },
                         ]}>
-                        {slot.price_per_kwh.toFixed(2)}
+                        {safeToFixed(slot.price_per_kwh, 2)}
                       </Text>
                       {isCurrent ? (
                         <View style={styles.nowBadge}>
@@ -236,11 +270,11 @@ export default function ScheduleScreen() {
                   <Text style={[styles.selectedHourRate, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                     Stawka:{' '}
                     <Text style={{ fontWeight: '800', color: isDark ? Palette.chartreuse : Palette.sageGreen }}>
-                      {selectedHour.price_per_kwh.toFixed(3)} €/kWh
+                      {safeToFixed(selectedHour.price_per_kwh, 3)} €/kWh
                     </Text>
                   </Text>
                   <Text style={[styles.selectedHourAction, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
-                    💡 {selectedHour.recommended_action}
+                    💡 {selectedHour.recommended_action || getSlotActionFallback(selectedHour.status_code)}
                   </Text>
                 </View>
               ) : null}
@@ -368,7 +402,7 @@ export default function ScheduleScreen() {
                           {period.label}
                         </Text>
                         <Text style={[styles.tariffPrice, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                          {period.price_per_kwh.toFixed(2)} €/kWh
+                          {safeToFixed(period.price_per_kwh, 2)} €/kWh
                         </Text>
                       </View>
                       <Text style={[styles.tariffHours, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>

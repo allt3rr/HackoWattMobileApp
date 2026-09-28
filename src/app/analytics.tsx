@@ -27,6 +27,7 @@ import {
 } from '@/constants/theme';
 import { useApiQuery } from '@/hooks/useApi';
 import { ForecastHorizon } from '@/types/api';
+import { safeString, safeToFixed } from '@/utils/formatters';
 
 const CATEGORY_COLORS: Record<string, { label: string; color: string }> = {
   Baza_kWh: { label: 'Baza stała', color: Palette.slateGrey },
@@ -79,7 +80,7 @@ export default function AnalyticsScreen() {
 
   // Helper to extract category breakdown percentages from summary categories_totals
   const renderCategoryBreakdown = (categoriesTotals: Record<string, number>, totalKwh: number) => {
-    const entries = Object.entries(categoriesTotals);
+    const entries = Object.entries(categoriesTotals || {});
     if (!entries.length || totalKwh <= 0) return null;
 
     return (
@@ -105,7 +106,7 @@ export default function AnalyticsScreen() {
         {/* Legend list */}
         <View style={styles.legendGrid}>
           {entries.map(([key, val]) => {
-            const pct = ((val / totalKwh) * 100).toFixed(1);
+            const pct = safeToFixed((val / (totalKwh || 1)) * 100, 1);
             const cat = CATEGORY_COLORS[key] || { label: key, color: Palette.slateGrey };
             return (
               <View key={key} style={styles.catRow}>
@@ -117,7 +118,7 @@ export default function AnalyticsScreen() {
                 </View>
                 <View style={styles.catRight}>
                   <Text style={[styles.catVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                    {val.toFixed(1)} kWh
+                    {safeToFixed(val, 1)} kWh
                   </Text>
                   <Text style={[styles.catPct, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     ({pct}%)
@@ -201,14 +202,14 @@ export default function AnalyticsScreen() {
               <View style={styles.kpiRow}>
                 <MetricTile
                   label="Prognozowane zużycie"
-                  value={forecastData.total_kwh.toFixed(1)}
+                  value={safeToFixed(forecastData.total_kwh, 1)}
                   unit="kWh"
                   subtitle={`Horyzont ${forecastData.horizon_hours}h`}
                   accentColor={Palette.radioactiveGrass}
                 />
                 <MetricTile
                   label="Liczba szczytów"
-                  value={forecastData.peaks ? forecastData.peaks.length : 0}
+                  value={Array.isArray(forecastData.peaks) ? forecastData.peaks.length : 0}
                   subtitle="Wykryte anomalie"
                   accentColor="#EF4444"
                 />
@@ -226,12 +227,12 @@ export default function AnalyticsScreen() {
                         const maxVal = 2.5;
                         const heightPercent = Math.min(100, (point.total_kwh / maxVal) * 100);
                         const isHigh = point.total_kwh > 1.1;
-                        const hour = point.timestamp.substring(11, 16);
+                        const hour = point.timestamp ? point.timestamp.substring(11, 16) : '--:--';
 
                         return (
                           <View key={index} style={styles.chartCol}>
                             <Text style={[styles.chartVal, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
-                              {point.total_kwh.toFixed(1)}
+                              {safeToFixed(point.total_kwh, 1)}
                             </Text>
                             <View style={[styles.chartTrack, { backgroundColor: isDark ? '#2E333A' : '#E2E8F0' }]}>
                               <View
@@ -241,8 +242,8 @@ export default function AnalyticsScreen() {
                                     height: `${heightPercent}%`,
                                     backgroundColor: isHigh ? '#EF4444' : Palette.radioactiveGrass,
                                   },
-                                ]}
-                              />
+                                ]}>
+                              </View>
                             </View>
                             <Text style={[styles.chartHour, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                               {hour}
@@ -262,11 +263,13 @@ export default function AnalyticsScreen() {
                     Zidentyfikowane szczyty i wyjaśnienia:
                   </Text>
                   {forecastData.peaks.map((peak, idx) => {
-                    const formattedDate = new Date(peak.timestamp).toLocaleString('pl-PL', {
-                      weekday: 'short',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    });
+                    const formattedDate = peak.timestamp
+                      ? new Date(peak.timestamp).toLocaleString('pl-PL', {
+                          weekday: 'short',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '';
                     return (
                       <View
                         key={idx}
@@ -282,10 +285,10 @@ export default function AnalyticsScreen() {
                             <Ionicons name="alert-circle" size={16} color="#EF4444" />
                             <Text style={styles.peakHourText}>{formattedDate}</Text>
                           </View>
-                          <StatusBadge variant="red" label={`Szczyt: ${peak.total_kwh} kWh`} />
+                          <StatusBadge variant="red" label={`Szczyt: ${safeToFixed(peak.total_kwh, 2)} kWh`} />
                         </View>
                         <Text style={[styles.peakExpl, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
-                          {peak.explanation}
+                          {safeString(peak.explanation)}
                         </Text>
                       </View>
                     );
@@ -327,15 +330,15 @@ export default function AnalyticsScreen() {
             <View style={styles.kpiRow}>
               <MetricTile
                 label="Błąd MAE (Model)"
-                value={metricsData.mae_model.toFixed(3)}
+                value={safeToFixed(metricsData.mae_model, 3)}
                 unit="kWh"
-                subtitle={`Baseline: ${metricsData.mae_baseline.toFixed(3)}`}
+                subtitle={`Baseline: ${safeToFixed(metricsData.mae_baseline, 3)}`}
                 accentColor={Palette.radioactiveGrass}
               />
               <MetricTile
                 label="Błąd MAPE (Model)"
-                value={`${metricsData.mape_model.toFixed(1)}%`}
-                subtitle={`Baseline: ${metricsData.mape_baseline.toFixed(1)}%`}
+                value={`${safeToFixed(metricsData.mape_model, 1)}%`}
+                subtitle={`Baseline: ${safeToFixed(metricsData.mape_baseline, 1)}%`}
                 accentColor={isDark ? Palette.chartreuse : Palette.sageGreen}
               />
             </View>
@@ -363,13 +366,13 @@ export default function AnalyticsScreen() {
                   Struktura zużycia w okresie
                 </Text>
                 <Text style={[styles.breakdownSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  Łącznie: {historyData.summary.total_kwh.toFixed(1)} kWh ({historyData.summary.start} do {historyData.summary.end})
+                  Łącznie: {safeToFixed(historyData.summary?.total_kwh, 1)} kWh ({historyData.summary?.start} do {historyData.summary?.end})
                 </Text>
               </View>
 
               {renderCategoryBreakdown(
-                historyData.summary.categories_totals,
-                historyData.summary.total_kwh
+                historyData.summary?.categories_totals,
+                historyData.summary?.total_kwh
               )}
             </Card>
 
@@ -380,12 +383,13 @@ export default function AnalyticsScreen() {
                   Godzinowy rejestr pomiarów
                 </Text>
                 <Text style={[styles.pageIndicator, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  Strona {historyData.pagination.page} z {historyData.pagination.total_pages}
+                  Strona {historyData.pagination?.page ?? 1} z {historyData.pagination?.total_pages ?? 1}
                 </Text>
               </View>
 
               {historyData.items.map((rec, idx) => {
-                const dateStr = rec.timestamp.replace('T', ' ').substring(0, 16);
+                const dateStr = rec.timestamp ? rec.timestamp.replace('T', ' ').substring(0, 16) : '';
+                const tempStr = rec.temperature_c != null ? ` (${safeToFixed(rec.temperature_c, 1)}°C)` : '';
                 return (
                   <View
                     key={idx}
@@ -395,15 +399,15 @@ export default function AnalyticsScreen() {
                     ]}>
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.recordDate, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {dateStr} ({rec.temperature_c}°C)
+                        {dateStr}{tempStr}
                       </Text>
                       <Text style={[styles.recordCategories, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                        Ogrz: {rec.categories.Ogrzewanie_kWh?.toFixed(2) ?? 0} kWh • AGD: {rec.categories.Duze_AGD_kWh?.toFixed(2) ?? 0} kWh • RTV: {rec.categories.RTV_PC_kWh?.toFixed(2) ?? 0} kWh
+                        Ogrz: {safeToFixed(rec.categories?.Ogrzewanie_kWh, 2)} kWh • AGD: {safeToFixed(rec.categories?.Duze_AGD_kWh, 2)} kWh • RTV: {safeToFixed(rec.categories?.RTV_PC_kWh, 2)} kWh
                       </Text>
                     </View>
                     <View style={{ alignItems: 'flex-end' }}>
                       <Text style={[styles.recordKwh, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                        {rec.total_kwh.toFixed(3)} kWh
+                        {safeToFixed(rec.total_kwh, 3)} kWh
                       </Text>
                     </View>
                   </View>

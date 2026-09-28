@@ -25,6 +25,7 @@ import {
   Spacing,
 } from '@/constants/theme';
 import { useApiQuery } from '@/hooks/useApi';
+import { formatPaybackYears, safeToFixed } from '@/utils/formatters';
 
 export default function SolarScreen() {
   const isDark = useColorScheme() === 'dark';
@@ -150,13 +151,13 @@ export default function SolarScreen() {
               <View style={styles.metricsRow}>
                 <MetricTile
                   label="Roczna produkcja PV"
-                  value={simResult.annual_production_kwh.toFixed(0)}
+                  value={safeToFixed(simResult.annual_production_kwh, 0)}
                   unit="kWh"
                   accentColor="#EAB308"
                 />
                 <MetricTile
                   label="Roczne zużycie domu"
-                  value={simResult.annual_consumption_kwh.toFixed(0)}
+                  value={safeToFixed(simResult.annual_consumption_kwh, 0)}
                   unit="kWh"
                   accentColor={Palette.radioactiveGrass}
                 />
@@ -179,7 +180,7 @@ export default function SolarScreen() {
                         Autokonsumpcja:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen, fontWeight: '800' }]}>
-                        {simResult.variant_a.coverage_percent}%
+                        {safeToFixed(simResult.variant_a.coverage_percent, 0)}%
                       </Text>
                     </View>
 
@@ -188,7 +189,7 @@ export default function SolarScreen() {
                         Użyte ze słońca:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {simResult.variant_a.self_consumption_kwh.toFixed(0)} kWh
+                        {safeToFixed(simResult.variant_a.self_consumption_kwh, 0)} kWh
                       </Text>
                     </View>
 
@@ -197,7 +198,7 @@ export default function SolarScreen() {
                         Eksport do sieci:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {simResult.variant_a.exported_kwh.toFixed(0)} kWh
+                        {safeToFixed(simResult.variant_a.exported_kwh, 0)} kWh
                       </Text>
                     </View>
 
@@ -206,7 +207,7 @@ export default function SolarScreen() {
                         Oszczędność roczna:
                       </Text>
                       <Text style={[styles.statVal, { color: Palette.radioactiveGrass, fontWeight: '800' }]}>
-                        +{simResult.variant_a.savings_eur.toFixed(0)} €
+                        +{safeToFixed(simResult.variant_a.savings_eur, 0)} €
                       </Text>
                     </View>
 
@@ -215,7 +216,7 @@ export default function SolarScreen() {
                         Czas zwrotu:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {simResult.variant_a.payback_years} lat
+                        {formatPaybackYears(simResult.variant_a.payback_years)}
                       </Text>
                     </View>
                   </View>
@@ -236,7 +237,7 @@ export default function SolarScreen() {
                         Autokonsumpcja:
                       </Text>
                       <Text style={[styles.statVal, { color: Palette.radioactiveGrass, fontWeight: '900' }]}>
-                        {simResult.variant_b.coverage_percent}%
+                        {safeToFixed(simResult.variant_b.coverage_percent, 0)}%
                       </Text>
                     </View>
 
@@ -245,7 +246,7 @@ export default function SolarScreen() {
                         Użyte ze słońca:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {simResult.variant_b.self_consumption_kwh.toFixed(0)} kWh
+                        {safeToFixed(simResult.variant_b.self_consumption_kwh, 0)} kWh
                       </Text>
                     </View>
 
@@ -254,7 +255,7 @@ export default function SolarScreen() {
                         Eksport do sieci:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {simResult.variant_b.exported_kwh.toFixed(0)} kWh
+                        {safeToFixed(simResult.variant_b.exported_kwh, 0)} kWh
                       </Text>
                     </View>
 
@@ -263,7 +264,7 @@ export default function SolarScreen() {
                         Oszczędność roczna:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen, fontWeight: '900' }]}>
-                        +{simResult.variant_b.savings_eur.toFixed(0)} €
+                        +{safeToFixed(simResult.variant_b.savings_eur, 0)} €
                       </Text>
                     </View>
 
@@ -272,7 +273,7 @@ export default function SolarScreen() {
                         Czas zwrotu:
                       </Text>
                       <Text style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {simResult.variant_b.payback_years} lat
+                        {formatPaybackYears(simResult.variant_b.payback_years)}
                       </Text>
                     </View>
                   </View>
@@ -294,7 +295,7 @@ export default function SolarScreen() {
                     Zysk z optymalizacji harmonogramu:
                   </Text>
                   <Text style={[styles.gainSubtitle, { color: isDark ? '#E2E8F0' : '#2A5A20' }]}>
-                    +{simResult.optimization_gain.additional_self_kwh.toFixed(1)} kWh autokonsumpcji • +{simResult.optimization_gain.additional_savings_eur.toFixed(2)} € dodatkowych oszczędności/rok
+                    +{safeToFixed(simResult.optimization_gain.additional_self_kwh, 1)} kWh autokonsumpcji • +{safeToFixed(simResult.optimization_gain.additional_savings_eur, 2)} € dodatkowych oszczędności/rok
                   </Text>
                 </View>
               </View>
@@ -322,10 +323,10 @@ export default function SolarScreen() {
                         </Text>
                       </View>
                       <Text style={[styles.recDeviceSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                        Przesunięto: {d.moved_kwh.toFixed(1)} kWh • Zaoszczędzono z sieci: {d.grid_saved_kwh.toFixed(1)} kWh
+                        Przesunięto: {safeToFixed(d.moved_kwh, 1)} kWh • Zaoszczędzono z sieci: {safeToFixed(d.grid_saved_kwh, 1)} kWh
                       </Text>
                       <Text style={[styles.recMoneySaved, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                        +{d.money_saved_eur.toFixed(2)} €/rok
+                        +{safeToFixed(d.money_saved_eur, 2)} €/rok
                       </Text>
                     </View>
                   ))}
@@ -382,25 +383,25 @@ export default function SolarScreen() {
 
                 <View style={{ flex: 1.4 }}>
                   <Text style={[styles.tdText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
-                    {v.annual_production_kwh.toFixed(0)} kWh
+                    {safeToFixed(v.annual_production_kwh, 0)} kWh
                   </Text>
                 </View>
 
                 <View style={{ flex: 1.4 }}>
                   <Text style={[styles.tdText, { color: Palette.radioactiveGrass, fontWeight: '700' }]}>
-                    {v.coverage_a_percent}% / {v.coverage_b_percent}%
+                    {safeToFixed(v.coverage_a_percent, 0)}% / {safeToFixed(v.coverage_b_percent, 0)}%
                   </Text>
                 </View>
 
                 <View style={{ flex: 1.4 }}>
                   <Text style={[styles.tdText, { color: isDark ? Palette.chartreuse : Palette.sageGreen, fontWeight: '700' }]}>
-                    +{v.savings_b_eur.toFixed(0)} €
+                    +{safeToFixed(v.savings_b_eur, 0)} €
                   </Text>
                 </View>
 
                 <View style={{ flex: 1.1 }}>
                   <Text style={[styles.tdText, { color: isDark ? '#FFFFFF' : '#1C2024', fontWeight: '700' }]}>
-                    {v.payback_b_years} lat
+                    {formatPaybackYears(v.payback_b_years)}
                   </Text>
                 </View>
               </View>
@@ -434,27 +435,27 @@ export default function SolarScreen() {
                   Lokalizacja: {assumptionsData.location}
                 </Text>
                 <Text style={[styles.assumpWindow, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                  Okno PV: {assumptionsData.pv_assumptions.recommended_window}
+                  Okno PV: {assumptionsData.pv_assumptions?.recommended_window ?? '9:00 - 15:00'}
                 </Text>
               </View>
 
               <View style={styles.metricsRow}>
                 <MetricTile
                   label="Mieszkańcy"
-                  value={assumptionsData.household.residents_count}
+                  value={assumptionsData.household?.residents_count ?? 6}
                   unit="os."
-                  subtitle={assumptionsData.household.profile}
+                  subtitle={assumptionsData.household?.profile}
                 />
                 <MetricTile
                   label="Ogrzewanie"
-                  value={assumptionsData.household.heating_type}
+                  value={assumptionsData.household?.heating_type ?? 'Pompa ciepła'}
                   subtitle="Typ instalacji"
                 />
                 <MetricTile
                   label="Odkup energii"
-                  value={assumptionsData.pv_assumptions.export_price_per_kwh_eur.toFixed(2)}
+                  value={safeToFixed(assumptionsData.pv_assumptions?.export_price_per_kwh_eur, 2)}
                   unit="€/kWh"
-                  subtitle={`Koszt: ${assumptionsData.pv_assumptions.installation_cost_per_kwp_eur} €/kWp`}
+                  subtitle={`Koszt: ${safeToFixed(assumptionsData.pv_assumptions?.installation_cost_per_kwp_eur, 0)} €/kWp`}
                   accentColor={Palette.radioactiveGrass}
                 />
               </View>

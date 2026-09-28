@@ -26,6 +26,79 @@ import {
 } from '@/constants/theme';
 import { useApiQuery } from '@/hooks/useApi';
 import { DeviceGuidanceItem } from '@/types/api';
+import { safeString, safeToFixed } from '@/utils/formatters';
+
+interface EnrichedDevice {
+  device: string;
+  cycleOrAnnualText: string;
+  annualSavingsText: string;
+  bestHours: string;
+  targetGroup: string;
+  tip: string;
+}
+
+function mapToBackendDevice(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes('pral')) return 'Pralka';
+  if (n.includes('zmyw')) return 'Zmywarka';
+  if (n.includes('susz')) return 'Suszarka';
+  return 'Pralka';
+}
+
+function enrichDeviceGuidance(device: DeviceGuidanceItem): EnrichedDevice {
+  const name = device.device;
+  const n = name.toLowerCase();
+
+  let cycleOrAnnualText = `${safeToFixed(device.annual_energy_kwh, 1)} kWh / rok`;
+  if (device.energy_per_cycle_kwh != null) {
+    cycleOrAnnualText = `${safeToFixed(device.energy_per_cycle_kwh, 2)} kWh / cykl`;
+  }
+
+  let savingsEur = device.annual_savings_potential_eur;
+  if (savingsEur == null && device.energy_started_outside_pv_window_kwh != null) {
+    savingsEur = Math.round(device.energy_started_outside_pv_window_kwh * 0.15 * 10) / 10;
+  }
+
+  let bestHours = device.best_hours;
+  let targetGroup = device.target_group;
+  let tip = device.tip_pl;
+
+  if (n.includes('zmyw')) {
+    savingsEur = savingsEur ?? 28;
+    bestHours = bestHours || '09:00 – 15:00 lub 01:00 – 05:00';
+    targetGroup = targetGroup || 'Dziadkowie w dzień / Rodzice (timer nocny)';
+    tip = tip || 'Uruchamiaj tylko w pełni załadowaną zmywarkę w programie Eco 50°C.';
+  } else if (n.includes('pral')) {
+    savingsEur = savingsEur ?? 22;
+    bestHours = bestHours || '09:00 – 14:00 (Słońce / PV)';
+    targetGroup = targetGroup || 'Dziadkowie w domu / Młodzież po szkole';
+    tip = tip || 'Pranie w 30–40°C zużywa do 40% mniej energii niż w 60°C.';
+  } else if (n.includes('susz')) {
+    savingsEur = savingsEur ?? 45;
+    bestHours = bestHours || '10:00 – 15:00 (Maksimum PV)';
+    targetGroup = targetGroup || 'Rodzice w weekend / Dziadkowie w południe';
+    tip = tip || 'Suszarka bębnowa pobiera najwięcej prądu – uruchamiaj tylko w oknie PV!';
+  } else if (n.includes('gotow') || n.includes('piek')) {
+    savingsEur = savingsEur ?? 18;
+    bestHours = bestHours || '11:00 – 14:00 (Przed szczytem)';
+    targetGroup = targetGroup || 'Dziadkowie w domu w ciągu dnia';
+    tip = tip || 'Gotuj pod przykryciem i wykorzystuj ciepło resztkowe piekarnika.';
+  } else {
+    savingsEur = savingsEur ?? 14;
+    bestHours = bestHours || 'Poza godzinami 17:00 – 21:00';
+    targetGroup = targetGroup || 'Młodzież i pracujący rodzice';
+    tip = tip || 'Wyłączaj urządzenia ze stanu czuwania (standby) listwą zasilającą.';
+  }
+
+  return {
+    device: name,
+    cycleOrAnnualText,
+    annualSavingsText: `+${safeToFixed(savingsEur, 0)} €/rok`,
+    bestHours,
+    targetGroup,
+    tip,
+  };
+}
 
 export default function DevicesScreen() {
   const isDark = useColorScheme() === 'dark';
@@ -65,11 +138,11 @@ export default function DevicesScreen() {
   } = useApiQuery(
     () =>
       hackoWattApi.simulateDeviceShift({
-        device: selectedDeviceName,
+        device: mapToBackendDevice(selectedDeviceName),
         original_hour: origHour,
         target_hour: targetHour,
       }),
-    `${selectedDeviceName}-${origHour}-${targetHour}`
+    `${mapToBackendDevice(selectedDeviceName)}-${origHour}-${targetHour}`
   );
 
   const handleRefresh = async () => {
@@ -256,10 +329,10 @@ export default function DevicesScreen() {
                     Zysk na cykl
                   </Text>
                   <Text style={[styles.resultCycleVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                    +{simResult.savings_per_cycle_eur?.toFixed(3)} €
+                    +{safeToFixed(simResult.savings_per_cycle_eur, 3)} €
                   </Text>
                   <Text style={[styles.resultCostSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                    Koszt: {simResult.target_cost_eur?.toFixed(3)} € (było {simResult.original_cost_eur?.toFixed(3)} €)
+                    Koszt: {safeToFixed(simResult.target_cost_eur, 3)} € (było {safeToFixed(simResult.original_cost_eur, 3)} €)
                   </Text>
                 </View>
 
@@ -268,16 +341,16 @@ export default function DevicesScreen() {
                     Szac. zysk roczny
                   </Text>
                   <Text style={[styles.resultYearVal, { color: Palette.radioactiveGrass }]}>
-                    +{simResult.estimated_annual_savings_eur?.toFixed(2)} €
+                    +{safeToFixed(simResult.estimated_annual_savings_eur, 2)} €
                   </Text>
                   <Text style={[styles.resultCostSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                    cykli rocznie: {simResult.estimated_annual_cycles}
+                    cykli rocznie: {simResult.estimated_annual_cycles ?? 0}
                   </Text>
                 </View>
               </View>
 
               <Text style={[styles.resultRecText, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
-                💡 {simResult.recommendation}
+                💡 {safeString(simResult.recommendation, 'Zalecane przesunięcie cyklu.')}
               </Text>
             </View>
           ) : null}
@@ -297,55 +370,58 @@ export default function DevicesScreen() {
           <ActivityIndicator size="small" color={Palette.radioactiveGrass} />
         ) : guidanceData ? (
           <View style={styles.guidanceList}>
-            {guidanceData.devices.map((device, idx) => (
-              <Card key={idx} bordered style={styles.deviceCard}>
-                <View style={styles.deviceHeader}>
-                  <View style={styles.deviceLeft}>
-                    <View style={[styles.deviceIconBox, { backgroundColor: isDark ? '#2B3037' : '#EBF9E6' }]}>
-                      <Ionicons
-                        name={getDeviceIcon(device.device)}
-                        size={20}
-                        color={Palette.radioactiveGrass}
-                      />
+            {guidanceData.devices.map((device, idx) => {
+              const enriched = enrichDeviceGuidance(device);
+              return (
+                <Card key={idx} bordered style={styles.deviceCard}>
+                  <View style={styles.deviceHeader}>
+                    <View style={styles.deviceLeft}>
+                      <View style={[styles.deviceIconBox, { backgroundColor: isDark ? '#2B3037' : '#EBF9E6' }]}>
+                        <Ionicons
+                          name={getDeviceIcon(device.device)}
+                          size={20}
+                          color={Palette.radioactiveGrass}
+                        />
+                      </View>
+                      <View>
+                        <Text style={[styles.deviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                          {enriched.device}
+                        </Text>
+                        <Text style={[styles.deviceKwh, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                          {enriched.cycleOrAnnualText}
+                        </Text>
+                      </View>
                     </View>
-                    <View>
-                      <Text style={[styles.deviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                        {device.device}
-                      </Text>
-                      <Text style={[styles.deviceKwh, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                        {device.energy_per_cycle_kwh} kWh / cykl
-                      </Text>
-                    </View>
+                    <StatusBadge variant="green" label={enriched.annualSavingsText} />
                   </View>
-                  <StatusBadge variant="green" label={`+${device.annual_savings_potential_eur} €/rok`} />
-                </View>
 
-                {/* Best Hours Tag */}
-                <View style={styles.hoursTagRow}>
-                  <Ionicons name="time-outline" size={15} color={Palette.radioactiveGrass} />
-                  <Text style={[styles.hoursTagText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                    Najlepsze pory: {device.best_hours}
+                  {/* Best Hours Tag */}
+                  <View style={styles.hoursTagRow}>
+                    <Ionicons name="time-outline" size={15} color={Palette.radioactiveGrass} />
+                    <Text style={[styles.hoursTagText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                      Najlepsze pory: {enriched.bestHours}
+                    </Text>
+                  </View>
+
+                  <Text style={[styles.deviceTarget, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                    Dla kogo: {enriched.targetGroup}
                   </Text>
-                </View>
 
-                <Text style={[styles.deviceTarget, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
-                  Dla kogo: {device.target_group}
-                </Text>
-
-                <Text style={[styles.deviceTip, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  💡 {device.tip_pl}
-                </Text>
-
-                <Pressable
-                  onPress={() => handleSelectGuidanceDevice(device)}
-                  style={styles.calcActionRow}>
-                  <Ionicons name="calculator-outline" size={14} color={Palette.radioactiveGrass} />
-                  <Text style={[styles.calcActionText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                    Przelicz w kalkulatorze powyżej ➔
+                  <Text style={[styles.deviceTip, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    💡 {enriched.tip}
                   </Text>
-                </Pressable>
-              </Card>
-            ))}
+
+                  <Pressable
+                    onPress={() => handleSelectGuidanceDevice(device)}
+                    style={styles.calcActionRow}>
+                    <Ionicons name="calculator-outline" size={14} color={Palette.radioactiveGrass} />
+                    <Text style={[styles.calcActionText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                      Przelicz w kalkulatorze powyżej ➔
+                    </Text>
+                  </Pressable>
+                </Card>
+              );
+            })}
           </View>
         ) : (
           <ErrorStateCard
@@ -416,7 +492,7 @@ export default function DevicesScreen() {
                     Dzień: {evt.day} • Czas trwania: {evt.duration_h}h
                   </Text>
                   <Text style={[styles.eventEnergy, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                    Zużycie: {evt.energy_kwh} kWh
+                    Zużycie: {safeToFixed(evt.energy_kwh, 2)} kWh
                   </Text>
                 </View>
               </Card>
