@@ -6,7 +6,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   useColorScheme,
   View,
@@ -14,7 +13,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
-import { ApiStatusIndicator } from '@/components/ui/ApiStatusIndicator';
+import { AppHeader } from '@/components/ui/AppHeader';
+import { AppText } from '@/components/ui/AppText';
 import { Card } from '@/components/ui/Card';
 import { ErrorStateCard } from '@/components/ui/ErrorStateCard';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -183,18 +183,13 @@ export default function DevicesScreen() {
             tintColor={Palette.radioactiveGrass}
           />
         }>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <View>
-            <Text style={[styles.screenTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-              Urządzenia & Kalkulator
-            </Text>
-            <Text style={[styles.screenSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-              Przewodnik po AGD, symulator przesunięcia i harmonogram elastyczny
-            </Text>
-          </View>
-          <ApiStatusIndicator sourceUrl={sourceUrl} onRefresh={handleRefresh} />
-        </View>
+        {/* Header with EkoDzik Mobile Logo & Accessibility Bar */}
+        <AppHeader
+          title="EkoDzik Mobile"
+          subtitle="Urządzenia AGD & Kalkulator Oszczędności"
+          sourceUrl={sourceUrl}
+          onRefresh={handleRefresh}
+        />
 
         {/* ============================================================ */}
         {/* SHIFT SIMULATOR CALCULATOR */}
@@ -202,23 +197,23 @@ export default function DevicesScreen() {
         <Card highlightZone="green" style={styles.calcCard}>
           <View style={styles.calcHeader}>
             <View style={styles.calcTitleGroup}>
-              <Ionicons name="calculator" size={22} color={Palette.radioactiveGrass} />
-              <View>
-                <Text style={[styles.calcTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <Ionicons name="calculator" size={24} color={Palette.radioactiveGrass} />
+              <View style={{ flex: 1 }}>
+                <AppText style={[styles.calcTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Kalkulator przesunięcia pracy AGD
-                </Text>
-                <Text style={[styles.calcSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                </AppText>
+                <AppText style={[styles.calcSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                   Przelicz zysk w EUR z przesunięcia cyklu (np. 19:00 ➔ 12:00)
-                </Text>
+                </AppText>
               </View>
             </View>
             <StatusBadge variant="green" label="Oszczędzaj €" />
           </View>
 
           {/* Device Picker Buttons */}
-          <Text style={[styles.pickerLabel, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+          <AppText style={[styles.pickerLabel, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
             Wybierz urządzenie do kalkulacji:
-          </Text>
+          </AppText>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.devicePillsRow}>
             {['Pralka', 'Zmywarka', 'Suszarka bębnowa', 'Piekarnik i płyta indukcyjna', 'Komputery, konsole i telewizory'].map(
               (dev) => {
@@ -227,6 +222,7 @@ export default function DevicesScreen() {
                   <Pressable
                     key={dev}
                     onPress={() => setSelectedDeviceName(dev)}
+                    accessibilityRole="button"
                     style={[
                       styles.devicePill,
                       {
@@ -242,7 +238,7 @@ export default function DevicesScreen() {
                           : '#E0E5E2',
                       },
                     ]}>
-                    <Text
+                    <AppText
                       style={[
                         styles.devicePillText,
                         {
@@ -255,57 +251,81 @@ export default function DevicesScreen() {
                         },
                       ]}>
                       {dev}
-                    </Text>
+                    </AppText>
                   </Pressable>
                 );
               }
             )}
           </ScrollView>
 
-          {/* Hour Selectors */}
+          {/* Hour Selectors (Senior-Friendly Large 44px Steppers) */}
           <View style={styles.stepperContainer}>
-            <View style={styles.hourCol}>
-              <Text style={[styles.hourColLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                Godzina oryginalna (droga):
-              </Text>
+            {/* Original Hour Card */}
+            <View
+              style={[
+                styles.hourBox,
+                {
+                  backgroundColor: isDark ? '#22252A' : '#F8FAFC',
+                  borderColor: isDark ? '#373C44' : '#E2E8F0',
+                },
+              ]}>
+              <AppText style={[styles.hourColLabel, { color: '#EF4444' }]}>
+                🔴 Oryginalna (droga):
+              </AppText>
               <View style={styles.stepperRow}>
                 <Pressable
                   onPress={() => setOrigHour((h) => Math.max(0, h - 1))}
+                  accessibilityRole="button"
+                  accessibilityLabel="Zmniejsz godzinę startową"
                   style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <Text style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>-</Text>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>-</AppText>
                 </Pressable>
-                <Text style={styles.origHourText}>
+                <AppText style={styles.origHourText}>
                   {origHour < 10 ? `0${origHour}:00` : `${origHour}:00`}
-                </Text>
+                </AppText>
                 <Pressable
                   onPress={() => setOrigHour((h) => Math.min(23, h + 1))}
+                  accessibilityRole="button"
+                  accessibilityLabel="Zwiększ godzinę startową"
                   style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <Text style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>+</Text>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>+</AppText>
                 </Pressable>
               </View>
             </View>
 
             <View style={styles.arrowBox}>
-              <Ionicons name="arrow-forward" size={20} color={Palette.radioactiveGrass} />
+              <Ionicons name="arrow-forward-circle" size={26} color={Palette.radioactiveGrass} />
             </View>
 
-            <View style={styles.hourCol}>
-              <Text style={[styles.hourColLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                Nowa godzina (tania / PV):
-              </Text>
+            {/* Target Hour Card */}
+            <View
+              style={[
+                styles.hourBox,
+                {
+                  backgroundColor: isDark ? '#22252A' : '#F8FAFC',
+                  borderColor: isDark ? '#373C44' : '#E2E8F0',
+                },
+              ]}>
+              <AppText style={[styles.hourColLabel, { color: isDark ? Palette.chartreuse : '#1F5A17' }]}>
+                🟢 Nowa (tania / PV):
+              </AppText>
               <View style={styles.stepperRow}>
                 <Pressable
                   onPress={() => setTargetHour((h) => Math.max(0, h - 1))}
+                  accessibilityRole="button"
+                  accessibilityLabel="Zmniejsz godzinę docelową"
                   style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <Text style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>-</Text>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>-</AppText>
                 </Pressable>
-                <Text style={[styles.targetHourText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                <AppText style={[styles.targetHourText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                   {targetHour < 10 ? `0${targetHour}:00` : `${targetHour}:00`}
-                </Text>
+                </AppText>
                 <Pressable
                   onPress={() => setTargetHour((h) => Math.min(23, h + 1))}
+                  accessibilityRole="button"
+                  accessibilityLabel="Zwiększ godzinę docelową"
                   style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <Text style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>+</Text>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>+</AppText>
                 </Pressable>
               </View>
             </View>
@@ -324,34 +344,34 @@ export default function DevicesScreen() {
                 },
               ]}>
               <View style={styles.resultMetricsRow}>
-                <View style={{ gap: 2 }}>
-                  <Text style={[styles.resultMetricLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                <View style={{ flex: 1, minWidth: 130 }}>
+                  <AppText style={[styles.resultMetricLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     Zysk na cykl
-                  </Text>
-                  <Text style={[styles.resultCycleVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  </AppText>
+                  <AppText style={[styles.resultCycleVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                     +{safeToFixed(simResult.savings_per_cycle_eur, 3)} €
-                  </Text>
-                  <Text style={[styles.resultCostSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  </AppText>
+                  <AppText style={[styles.resultCostSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     Koszt: {safeToFixed(simResult.target_cost_eur, 3)} € (było {safeToFixed(simResult.original_cost_eur, 3)} €)
-                  </Text>
+                  </AppText>
                 </View>
 
-                <View style={{ gap: 2, alignItems: 'flex-end' }}>
-                  <Text style={[styles.resultMetricLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                <View style={{ flex: 1, minWidth: 130, alignItems: 'flex-start' }}>
+                  <AppText style={[styles.resultMetricLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     Szac. zysk roczny
-                  </Text>
-                  <Text style={[styles.resultYearVal, { color: Palette.radioactiveGrass }]}>
+                  </AppText>
+                  <AppText style={[styles.resultYearVal, { color: Palette.radioactiveGrass }]}>
                     +{safeToFixed(simResult.estimated_annual_savings_eur, 2)} €
-                  </Text>
-                  <Text style={[styles.resultCostSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  </AppText>
+                  <AppText style={[styles.resultCostSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     cykli rocznie: {simResult.estimated_annual_cycles ?? 0}
-                  </Text>
+                  </AppText>
                 </View>
               </View>
 
-              <Text style={[styles.resultRecText, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+              <AppText style={[styles.resultRecText, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
                 💡 {safeString(simResult.recommendation, 'Zalecane przesunięcie cyklu.')}
-              </Text>
+              </AppText>
             </View>
           ) : null}
         </Card>
@@ -361,9 +381,9 @@ export default function DevicesScreen() {
         {/* ============================================================ */}
         <View style={styles.sectionTitleRow}>
           <Ionicons name="apps" size={18} color={Palette.sageGreen} />
-          <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
             Karty sprzętów domowych (Przewodnik)
-          </Text>
+          </AppText>
         </View>
 
         {guidanceLoading && !guidanceData ? (
@@ -379,17 +399,17 @@ export default function DevicesScreen() {
                       <View style={[styles.deviceIconBox, { backgroundColor: isDark ? '#2B3037' : '#EBF9E6' }]}>
                         <Ionicons
                           name={getDeviceIcon(device.device)}
-                          size={20}
+                          size={22}
                           color={Palette.radioactiveGrass}
                         />
                       </View>
-                      <View>
-                        <Text style={[styles.deviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <View style={{ flex: 1 }}>
+                        <AppText style={[styles.deviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                           {enriched.device}
-                        </Text>
-                        <Text style={[styles.deviceKwh, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                        </AppText>
+                        <AppText style={[styles.deviceKwh, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                           {enriched.cycleOrAnnualText}
-                        </Text>
+                        </AppText>
                       </View>
                     </View>
                     <StatusBadge variant="green" label={enriched.annualSavingsText} />
@@ -397,27 +417,28 @@ export default function DevicesScreen() {
 
                   {/* Best Hours Tag */}
                   <View style={styles.hoursTagRow}>
-                    <Ionicons name="time-outline" size={15} color={Palette.radioactiveGrass} />
-                    <Text style={[styles.hoursTagText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                    <Ionicons name="time-outline" size={16} color={Palette.radioactiveGrass} />
+                    <AppText style={[styles.hoursTagText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                       Najlepsze pory: {enriched.bestHours}
-                    </Text>
+                    </AppText>
                   </View>
 
-                  <Text style={[styles.deviceTarget, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                  <AppText style={[styles.deviceTarget, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                     Dla kogo: {enriched.targetGroup}
-                  </Text>
+                  </AppText>
 
-                  <Text style={[styles.deviceTip, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  <AppText style={[styles.deviceTip, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     💡 {enriched.tip}
-                  </Text>
+                  </AppText>
 
                   <Pressable
                     onPress={() => handleSelectGuidanceDevice(device)}
+                    accessibilityRole="button"
                     style={styles.calcActionRow}>
-                    <Ionicons name="calculator-outline" size={14} color={Palette.radioactiveGrass} />
-                    <Text style={[styles.calcActionText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                    <Ionicons name="calculator-outline" size={16} color={Palette.radioactiveGrass} />
+                    <AppText style={[styles.calcActionText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                       Przelicz w kalkulatorze powyżej ➔
-                    </Text>
+                    </AppText>
                   </Pressable>
                 </Card>
               );
@@ -438,9 +459,9 @@ export default function DevicesScreen() {
         {/* ============================================================ */}
         <View style={styles.sectionTitleRow}>
           <Ionicons name="sync" size={18} color={Palette.charcoal} />
-          <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
             Zrealizowane cykle elastyczne (Historia)
-          </Text>
+          </AppText>
         </View>
 
         {/* Quick Filter Bar */}
@@ -460,7 +481,7 @@ export default function DevicesScreen() {
             ]}
           />
           {eventDeviceFilter ? (
-            <Pressable onPress={() => setEventDeviceFilter('')} style={styles.clearFilterBtn}>
+            <Pressable onPress={() => setEventDeviceFilter('')} accessibilityRole="button" style={styles.clearFilterBtn}>
               <Ionicons name="close-circle" size={18} color={Palette.slateGrey} />
             </Pressable>
           ) : null}
@@ -468,32 +489,32 @@ export default function DevicesScreen() {
 
         {eventsData ? (
           <View style={styles.eventsList}>
-            <Text style={[styles.eventsCountText, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+            <AppText style={[styles.eventsCountText, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
               Liczba odnotowanych cykli:{' '}
-              <Text style={{ fontWeight: '800', color: isDark ? Palette.chartreuse : Palette.sageGreen }}>
+              <AppText style={{ fontWeight: '800', color: isDark ? Palette.chartreuse : Palette.sageGreen }}>
                 {eventsData.pagination?.total_items ?? eventsData.items?.length}
-              </Text>
-            </Text>
+              </AppText>
+            </AppText>
 
             {eventsData.items.map((evt, index) => (
               <Card key={index} style={styles.eventCard}>
                 <View style={styles.eventHeader}>
                   <View style={styles.eventTitleGroup}>
                     <Ionicons name="calendar-outline" size={16} color={Palette.radioactiveGrass} />
-                    <Text style={[styles.eventDeviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.eventDeviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                       {evt.device}
-                    </Text>
+                    </AppText>
                   </View>
                   <StatusBadge variant="green" label={`${evt.start_hour}:00`} />
                 </View>
 
                 <View style={styles.eventFooter}>
-                  <Text style={[styles.eventSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                    Dzień: {evt.day} • Czas trwania: {evt.duration_h}h
-                  </Text>
-                  <Text style={[styles.eventEnergy, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  <AppText style={[styles.eventSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    Dzień: {evt.day} • Czas: {evt.duration_h}h
+                  </AppText>
+                  <AppText style={[styles.eventEnergy, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                     Zużycie: {safeToFixed(evt.energy_kwh, 2)} kWh
-                  </Text>
+                  </AppText>
                 </View>
               </Card>
             ))}
@@ -509,26 +530,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 8,
     alignSelf: 'center',
     width: '100%',
-    gap: 16,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  screenTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  screenSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
+    gap: 14,
   },
   calcCard: {
     gap: 14,
@@ -537,12 +543,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   calcTitleGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     flex: 1,
+    minWidth: 180,
   },
   calcTitle: {
     fontSize: 15,
@@ -561,11 +570,13 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   devicePill: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
+    minHeight: 40,
+    justifyContent: 'center',
   },
   devicePillText: {
     fontSize: 12,
@@ -574,73 +585,83 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 10,
     marginTop: 6,
   },
-  hourCol: {
+  hourBox: {
     flex: 1,
-    gap: 4,
+    minWidth: 130,
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 6,
   },
   hourColLabel: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   stepperRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 8,
   },
   stepperBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   stepperBtnText: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '900',
   },
   origHourText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '900',
     color: '#EF4444',
   },
   targetHourText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '900',
   },
   arrowBox: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
+    alignSelf: 'center',
   },
   resultBox: {
     padding: 14,
     borderRadius: 12,
     borderWidth: 1,
-    gap: 8,
+    gap: 10,
   },
   resultMetricsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: 12,
   },
   resultMetricLabel: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   resultCycleVal: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '900',
   },
   resultYearVal: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '900',
   },
   resultCostSub: {
-    fontSize: 10,
+    fontSize: 11,
   },
   resultRecText: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 18,
     fontWeight: '600',
   },
   sectionTitleRow: {
@@ -650,8 +671,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '900',
     letterSpacing: -0.3,
   },
   guidanceList: {
@@ -665,25 +686,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   deviceLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    flex: 1,
+    minWidth: 180,
   },
   deviceIconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
   },
   deviceName: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '800',
   },
   deviceKwh: {
-    fontSize: 11,
+    fontSize: 12,
     marginTop: 1,
   },
   hoursTagRow: {
@@ -693,24 +718,25 @@ const styles = StyleSheet.create({
   },
   hoursTagText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   deviceTarget: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
   },
   deviceTip: {
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 12,
+    lineHeight: 17,
   },
   calcActionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     paddingTop: 4,
+    minHeight: 40,
   },
   calcActionText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '800',
   },
   filterWrap: {
@@ -721,12 +747,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 12,
+    paddingVertical: 10,
+    fontSize: 13,
   },
   clearFilterBtn: {
     position: 'absolute',
     right: 12,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   eventsList: {
     gap: 8,
@@ -736,13 +766,15 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   eventCard: {
-    gap: 4,
+    gap: 6,
     padding: 12,
   },
   eventHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   eventTitleGroup: {
     flexDirection: 'row',
@@ -750,20 +782,22 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   eventDeviceName: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '800',
   },
   eventFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
     paddingTop: 2,
   },
   eventSub: {
-    fontSize: 11,
+    fontSize: 12,
   },
   eventEnergy: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '800',
   },
 });

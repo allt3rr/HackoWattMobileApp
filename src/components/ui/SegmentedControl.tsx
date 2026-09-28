@@ -1,12 +1,13 @@
+import React from 'react';
 import { Palette } from '@/constants/theme';
 import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
+import { AppText } from '@/components/ui/AppText';
 
 export interface SegmentOption<T extends string | number> {
   value: T;
@@ -42,6 +43,8 @@ export function SegmentedControl<T extends string | number>({
           <Pressable
             key={String(opt.value)}
             onPress={() => onChange(opt.value)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isSelected }}
             style={[
               styles.item,
               isSelected
@@ -64,7 +67,7 @@ export function SegmentedControl<T extends string | number>({
                   }
                 : { backgroundColor: 'transparent' },
             ]}>
-            <Text
+            <AppText
               style={[
                 styles.itemText,
                 {
@@ -75,14 +78,14 @@ export function SegmentedControl<T extends string | number>({
                     : isDark
                     ? '#9AA4AF'
                     : Palette.slateGrey,
-                  fontWeight: isSelected ? '700' : '500',
+                  fontWeight: isSelected ? '800' : '600',
                 },
               ]}>
               {opt.label}
-            </Text>
+            </AppText>
             {opt.badge ? (
               <View style={styles.badgeWrap}>
-                <Text style={styles.badgeText}>{opt.badge}</Text>
+                <AppText style={styles.badgeText}>{opt.badge}</AppText>
               </View>
             ) : null}
           </Pressable>
@@ -98,10 +101,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     padding: 3,
-    marginVertical: 8,
+    marginVertical: 6,
+    flexWrap: 'wrap',
   },
   item: {
     flex: 1,
+    minWidth: 80,
+    minHeight: 44,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -112,6 +118,7 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 12,
+    textAlign: 'center',
   },
   badgeWrap: {
     borderRadius: 8,

@@ -7,6 +7,8 @@ import "../global.css";
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 
+import { TextScaleProvider } from '@/context/TextScaleContext';
+
 if (Platform.OS !== 'web') {
   SplashScreen.preventAutoHideAsync();
 }
@@ -15,10 +17,12 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <View className="h-full w-full flex-1">
-        {Platform.OS !== 'web' && <AnimatedSplashOverlay />}
-        <AppTabs />
-      </View>
+      <TextScaleProvider>
+        <View className="h-full w-full flex-1">
+          {Platform.OS !== 'web' && <AnimatedSplashOverlay />}
+          <AppTabs />
+        </View>
+      </TextScaleProvider>
     </ThemeProvider>
   );
 }

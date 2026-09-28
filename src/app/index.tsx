@@ -6,14 +6,14 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
-import { ApiStatusIndicator } from '@/components/ui/ApiStatusIndicator';
+import { AppHeader } from '@/components/ui/AppHeader';
+import { AppText } from '@/components/ui/AppText';
 import { Card } from '@/components/ui/Card';
 import { ErrorStateCard } from '@/components/ui/ErrorStateCard';
 import { MetricTile } from '@/components/ui/MetricTile';
@@ -73,30 +73,20 @@ export default function DashboardScreen() {
             tintColor={Palette.radioactiveGrass}
           />
         }>
-        {/* Top Header */}
-        <View style={styles.headerRow}>
-          <View>
-            <View style={styles.brandTitleRow}>
-              <View style={styles.logoBadge}>
-                <Ionicons name="flash" size={16} color="#0F172A" />
-              </View>
-              <Text style={[styles.brandTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                HackoWatt
-              </Text>
-            </View>
-            <Text style={[styles.brandSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-              Inteligentny doradca energetyczny
-            </Text>
-          </View>
-          <ApiStatusIndicator sourceUrl={sourceUrl} onRefresh={refetch} />
-        </View>
+        {/* Top Header with EkoDzik Mobile Logo & Accessibility Bar */}
+        <AppHeader
+          title="EkoDzik Mobile"
+          subtitle="Inteligentny doradca energetyczny"
+          sourceUrl={sourceUrl}
+          onRefresh={refetch}
+        />
 
         {isLoading && !summary ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Palette.radioactiveGrass} />
-            <Text style={[styles.loadingText, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+            <AppText style={[styles.loadingText, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
               Ładowanie danych z serwera backendu...
-            </Text>
+            </AppText>
           </View>
         ) : summary ? (
           <>
@@ -109,35 +99,36 @@ export default function DashboardScreen() {
                     label={tariff?.period_label || 'Strefa dzienna'}
                     size="medium"
                   />
-                  <Text style={[styles.heroHourText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                  <AppText style={[styles.heroHourText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                     Godzina: {tariff?.current_hour ?? 12}:00
-                  </Text>
+                  </AppText>
                 </View>
                 <Pressable
                   onPress={() => router.push('/schedule')}
+                  accessibilityRole="button"
                   style={styles.heroLink}>
-                  <Text style={[styles.heroLinkText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  <AppText style={[styles.heroLinkText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                     Harmonogram 24h →
-                  </Text>
+                  </AppText>
                 </Pressable>
               </View>
 
               <View style={styles.heroRateRow}>
-                <View>
-                  <Text style={[styles.rateLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                <View style={{ flex: 1, minWidth: 140 }}>
+                  <AppText style={[styles.rateLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     BIEŻĄCA STAWKA ENERGII
-                  </Text>
+                  </AppText>
                   <View style={styles.priceContainer}>
-                    <Text
+                    <AppText
                       style={[
                         styles.rateValue,
                         { color: getPriceColor(currentZone) },
                       ]}>
                       {safeToFixed(currentPrice, 3)}
-                    </Text>
-                    <Text style={[styles.rateUnit, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                    </AppText>
+                    <AppText style={[styles.rateUnit, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                       € / kWh
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
 
@@ -151,20 +142,20 @@ export default function DashboardScreen() {
                         backgroundColor: isDark ? '#1C1F24' : '#F8FAFC',
                       },
                     ]}>
-                    <Text style={[styles.instantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    <AppText style={[styles.instantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                       Pobór chwilowy
-                    </Text>
-                    <Text
+                    </AppText>
+                    <AppText
                       style={[
                         styles.instantValue,
                         { color: isDark ? Palette.chartreuse : Palette.sageGreen },
                       ]}>
                       {safeToFixed(lastReading.total_kwh, 2)} kWh
-                    </Text>
+                    </AppText>
                     {lastReading.temperature_c != null ? (
-                      <Text style={[styles.instantTemp, { color: Palette.radioactiveGrass }]}>
+                      <AppText style={[styles.instantTemp, { color: Palette.radioactiveGrass }]}>
                         Temp: {safeToFixed(lastReading.temperature_c, 1)} °C
-                      </Text>
+                      </AppText>
                     ) : null}
                   </View>
                 ) : null}
@@ -178,10 +169,10 @@ export default function DashboardScreen() {
                     borderColor: isDark ? Palette.charcoal : Palette.radioactiveGrass,
                   },
                 ]}>
-                <Ionicons name="sparkles" size={16} color={Palette.radioactiveGrass} />
-                <Text style={[styles.adviceText, { color: isDark ? '#E2E8F0' : '#1F5A17' }]}>
+                <Ionicons name="sparkles" size={18} color={Palette.radioactiveGrass} />
+                <AppText style={[styles.adviceText, { color: isDark ? '#E2E8F0' : '#1F5A17' }]}>
                   {tariff?.period_advice || 'Uruchamiaj elastyczne urządzenia w optymalnych oknach cenowych!'}
-                </Text>
+                </AppText>
               </View>
             </Card>
 
@@ -191,23 +182,23 @@ export default function DashboardScreen() {
                 <View style={styles.peakAlertHeader}>
                   <View style={styles.peakAlertTitleGroup}>
                     <Ionicons name="warning-outline" size={20} color="#EAB308" />
-                    <Text style={[styles.peakAlertTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.peakAlertTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                       Najbliższy szczyt zapotrzebowania
-                    </Text>
+                    </AppText>
                   </View>
                   <StatusBadge
                     variant="yellow"
                     label={`${nextPeak.timestamp ? nextPeak.timestamp.slice(11, 16) : ''} (~${safeToFixed(nextPeak.total_kwh, 2)} kWh)`}
                   />
                 </View>
-                <Text style={[styles.peakAlertText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                <AppText style={[styles.peakAlertText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                   {safeString(nextPeak.explanation, 'Wykryto szczyt obciążenia.')}
-                </Text>
+                </AppText>
                 <View style={styles.peakAlertFooter}>
-                  <Pressable onPress={() => router.push('/devices')}>
-                    <Text style={[styles.peakAlertLink, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  <Pressable onPress={() => router.push('/devices')} accessibilityRole="button">
+                    <AppText style={[styles.peakAlertLink, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                       Przesuń AGD na południe ➔
-                    </Text>
+                    </AppText>
                   </Pressable>
                 </View>
               </Card>
@@ -215,9 +206,9 @@ export default function DashboardScreen() {
 
             {/* Dominant Category & 24h Metrics */}
             <View style={styles.sectionTitleRow}>
-              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                 Podsumowanie bilansu 24h
-              </Text>
+              </AppText>
             </View>
 
             <View style={styles.metricsRow}>
@@ -225,7 +216,7 @@ export default function DashboardScreen() {
                 label="Ostatnie 24h"
                 value={safeToFixed(summary.history_last_24h_kwh, 1)}
                 unit="kWh"
-                subtitle="Suma zużycia z doby wstecz"
+                subtitle="Suma zużycia wstecz"
                 trend="down"
               />
               <MetricTile
@@ -251,30 +242,30 @@ export default function DashboardScreen() {
                     <View style={styles.dominantIconCircle}>
                       <Ionicons name="flame" size={18} color="#EF4444" />
                     </View>
-                    <View>
-                      <Text style={[styles.dominantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    <View style={{ flex: 1 }}>
+                      <AppText style={[styles.dominantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         DOMINUJĄCA KATEGORIA ZUŻYCIA
-                      </Text>
-                      <Text style={[styles.dominantName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      </AppText>
+                      <AppText style={[styles.dominantName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                         {dominant.label}
-                      </Text>
+                      </AppText>
                     </View>
                   </View>
                   <View style={styles.dominantKwhBadge}>
-                    <Text style={styles.dominantKwhText}>
+                    <AppText style={styles.dominantKwhText}>
                       {safeToFixed(dominant.kwh, 2)} kWh
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
 
                 <View style={styles.dominantFooter}>
-                  <Text style={[styles.dominantKey, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  <AppText style={[styles.dominantKey, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     Klucz: {dominant.key}
-                  </Text>
-                  <Pressable onPress={() => router.push('/analytics')}>
-                    <Text style={[styles.dominantLink, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  </AppText>
+                  <Pressable onPress={() => router.push('/analytics')} accessibilityRole="button">
+                    <AppText style={[styles.dominantLink, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                       Pełna analityka 6 kategorii →
-                    </Text>
+                    </AppText>
                   </Pressable>
                 </View>
               </Card>
@@ -282,9 +273,9 @@ export default function DashboardScreen() {
 
             {/* Quick Navigation Cards */}
             <View style={styles.sectionTitleRow}>
-              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                 Szybkie moduły
-              </Text>
+              </AppText>
             </View>
 
             <View style={styles.quickModulesGrid}>
@@ -292,48 +283,48 @@ export default function DashboardScreen() {
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#EBF9E6' }]}>
                   <Ionicons name="time" size={20} color={Palette.radioactiveGrass} />
                 </View>
-                <Text style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Harmonogram 24h
-                </Text>
-                <Text style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                </AppText>
+                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                   Strefy zielona/żółta/czerwona i porady dla pokoleń.
-                </Text>
+                </AppText>
               </Card>
 
               <Card onPress={() => router.push('/devices')} style={styles.moduleCard}>
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : 'rgba(107, 170, 117, 0.15)' }]}>
                   <Ionicons name="calculator" size={20} color={Palette.sageGreen} />
                 </View>
-                <Text style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Kalkulator AGD
-                </Text>
-                <Text style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                </AppText>
+                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                   Przelicz zysk z przesunięcia pralki na 12:00.
-                </Text>
+                </AppText>
               </Card>
 
               <Card onPress={() => router.push('/solar')} style={styles.moduleCard}>
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#FEF9C3' }]}>
                   <Ionicons name="sunny" size={20} color="#EAB308" />
                 </View>
-                <Text style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Fotowoltaika & Bateria
-                </Text>
-                <Text style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                </AppText>
+                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                   Symulacja wariantu A vs B i autokonsumpcja.
-                </Text>
+                </AppText>
               </Card>
 
               <Card onPress={() => router.push('/analytics')} style={styles.moduleCard}>
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#F1F5F9' }]}>
                   <Ionicons name="stats-chart" size={20} color={Palette.charcoal} />
                 </View>
-                <Text style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Prognoza & Metryki
-                </Text>
-                <Text style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                </AppText>
+                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                   Dokładność modelu MAE i prognozy do 168h.
-                </Text>
+                </AppText>
               </Card>
             </View>
           </>
@@ -356,39 +347,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 8,
     alignSelf: 'center',
     width: '100%',
-    gap: 16,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  brandTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  logoBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 7,
-    backgroundColor: Palette.radioactiveGrass,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  brandSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
+    gap: 14,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -400,34 +363,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   heroCard: {
-    gap: 16,
+    gap: 14,
   },
   heroTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   heroBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flexWrap: 'wrap',
   },
   heroHourText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   heroLink: {
-    paddingVertical: 4,
-    paddingHorizontal: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   heroLinkText: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
   },
   heroRateRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+    flexWrap: 'wrap',
+    gap: 12,
   },
   rateLabel: {
     fontSize: 11,
@@ -439,12 +409,13 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     gap: 6,
     marginTop: 4,
+    flexWrap: 'wrap',
   },
   rateValue: {
-    fontSize: 42,
+    fontSize: 40,
     fontWeight: '900',
     letterSpacing: -1,
-    lineHeight: 46,
+    lineHeight: 44,
   },
   rateUnit: {
     fontSize: 14,
@@ -455,8 +426,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     gap: 2,
+    minWidth: 120,
   },
   instantLabel: {
     fontSize: 10,
@@ -479,10 +451,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   adviceText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     flex: 1,
-    lineHeight: 17,
+    lineHeight: 18,
   },
   peakAlertCard: {
     gap: 8,
@@ -491,15 +463,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   peakAlertTitleGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flex: 1,
+    minWidth: 180,
   },
   peakAlertTitle: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   peakAlertText: {
     fontSize: 13,
@@ -511,19 +487,22 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   peakAlertLink: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
+    minHeight: 44,
+    textAlignVertical: 'center',
   },
   sectionTitleRow: {
     marginTop: 4,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: -0.3,
   },
   metricsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
   },
   dominantCard: {
@@ -533,16 +512,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   dominantLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    flex: 1,
+    minWidth: 180,
   },
   dominantIconCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#FEE2E2',
     justifyContent: 'center',
     alignItems: 'center',
@@ -560,7 +543,7 @@ const styles = StyleSheet.create({
   dominantKwhBadge: {
     backgroundColor: '#FEE2E2',
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: 12,
   },
   dominantKwhText: {
@@ -572,39 +555,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
     paddingTop: 4,
   },
   dominantKey: {
     fontSize: 11,
   },
   dominantLink: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
+    minHeight: 44,
+    textAlignVertical: 'center',
   },
   quickModulesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
   },
   moduleCard: {
     flex: 1,
-    minWidth: '45%',
+    minWidth: '47%',
+    padding: 12,
     gap: 6,
   },
   moduleIconBox: {
-    width: 36,
-    height: 36,
+    width: 38,
+    height: 38,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 4,
   },
   moduleTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
   },
   moduleDesc: {
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 12,
+    lineHeight: 16,
   },
 });

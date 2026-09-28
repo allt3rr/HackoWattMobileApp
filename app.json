@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "hackowattmobileapp",
-    "slug": "hackowattmobileapp",
+    "name": "ekodzik mobile",
+    "slug": "ekodzik-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "hackowattmobileapp",
+    "scheme": "ekodzikmobile",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"

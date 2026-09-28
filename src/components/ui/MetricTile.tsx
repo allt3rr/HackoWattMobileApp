@@ -1,5 +1,7 @@
+import React from 'react';
 import { Palette } from '@/constants/theme';
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, useColorScheme, View } from 'react-native';
+import { AppText } from '@/components/ui/AppText';
 
 interface MetricTileProps {
   label: string;
@@ -31,29 +33,29 @@ export function MetricTile({
           borderColor: isDark ? '#373C44' : '#E2E8F0',
         },
       ]}>
-      <Text style={[styles.label, { color: isDark ? '#A0AAB3' : Palette.slateGrey }]}>
+      <AppText style={[styles.label, { color: isDark ? '#A0AAB3' : Palette.slateGrey }]}>
         {label}
-      </Text>
+      </AppText>
 
       <View style={styles.valueRow}>
-        <Text
+        <AppText
           style={[
             styles.value,
             { color: accentColor ?? (isDark ? '#FFFFFF' : '#1C2024') },
           ]}>
           {value != null ? String(value) : ''}
-        </Text>
+        </AppText>
         {unit ? (
-          <Text style={[styles.unit, { color: isDark ? '#A0AAB3' : Palette.slateGrey }]}>
+          <AppText style={[styles.unit, { color: isDark ? '#A0AAB3' : Palette.slateGrey }]}>
             {unit}
-          </Text>
+          </AppText>
         ) : null}
       </View>
 
       {subtitle || trendValue ? (
         <View style={styles.subRow}>
           {trend ? (
-            <Text
+            <AppText
               style={[
                 styles.trendIcon,
                 {
@@ -61,11 +63,11 @@ export function MetricTile({
                 },
               ]}>
               {trend === 'down' ? '↓ ' : trend === 'up' ? '↑ ' : '→ '}
-            </Text>
+            </AppText>
           ) : null}
-          <Text style={[styles.subtitle, { color: isDark ? '#94A3B8' : Palette.slateGrey }]}>
+          <AppText style={[styles.subtitle, { color: isDark ? '#94A3B8' : Palette.slateGrey }]}>
             {trendValue ?? subtitle}
-          </Text>
+          </AppText>
         </View>
       ) : null}
     </View>
@@ -75,14 +77,15 @@ export function MetricTile({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minWidth: 100,
+    minWidth: 92,
     borderRadius: 14,
     borderWidth: 1,
-    padding: 12,
+    padding: 10,
+    justifyContent: 'space-between',
   },
   label: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -90,21 +93,23 @@ const styles = StyleSheet.create({
   valueRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    flexWrap: 'wrap',
     gap: 4,
   },
   value: {
     fontSize: 20,
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: -0.3,
   },
   unit: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   subRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 4,
+    flexWrap: 'wrap',
   },
   trendIcon: {
     fontSize: 11,

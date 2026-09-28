@@ -1,4 +1,5 @@
 import { Palette } from '@/constants/theme';
+import { AppLogo } from '@/components/ui/AppLogo';
 import { Ionicons } from '@expo/vector-icons';
 import { router, Slot, usePathname } from 'expo-router';
 import { Platform, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
@@ -41,15 +42,13 @@ export default function AppTabs() {
         <View style={styles.navContent}>
           {/* Brand Logo & Name */}
           <Pressable onPress={() => router.push('/')} style={styles.brandGroup}>
-            <View style={styles.logoBadge}>
-              <Ionicons name="flash" size={16} color="#0F172A" />
-            </View>
+            <AppLogo size={32} />
             <View>
               <Text style={[styles.brandTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                HackoWatt
+                EkoDzik Mobile
               </Text>
               <Text style={[styles.brandSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                Smart Energy
+                Dla Seniorów i Młodzieży
               </Text>
             </View>
           </Pressable>

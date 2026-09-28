@@ -6,14 +6,14 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
-import { ApiStatusIndicator } from '@/components/ui/ApiStatusIndicator';
+import { AppHeader } from '@/components/ui/AppHeader';
+import { AppText } from '@/components/ui/AppText';
 import { Card } from '@/components/ui/Card';
 import { ErrorStateCard } from '@/components/ui/ErrorStateCard';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
@@ -118,25 +118,20 @@ export default function ScheduleScreen() {
             tintColor={Palette.radioactiveGrass}
           />
         }>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <View>
-            <Text style={[styles.screenTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-              Harmonogram Dnia
-            </Text>
-            <Text style={[styles.screenSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-              Strefy cenowe 24h i inteligentne porady dla pokoleń
-            </Text>
-          </View>
-          <ApiStatusIndicator sourceUrl={scheduleUrl} onRefresh={handleRefresh} />
-        </View>
+        {/* Header with Logo & Accessibility Controller */}
+        <AppHeader
+          title="EkoDzik Mobile"
+          subtitle="Harmonogram 24h & Porady Pokoleniowe"
+          sourceUrl={scheduleUrl}
+          onRefresh={handleRefresh}
+        />
 
         {scheduleLoading && !schedule ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Palette.radioactiveGrass} />
-            <Text style={[styles.loadingText, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+            <AppText style={[styles.loadingText, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
               Pobieranie harmonogramu i taryf z serwera...
-            </Text>
+            </AppText>
           </View>
         ) : schedule ? (
           <>
@@ -145,21 +140,21 @@ export default function ScheduleScreen() {
               <View style={styles.legendRow}>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: Palette.radioactiveGrass }]} />
-                  <Text style={[styles.legendText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
-                    Zielona: Tani prąd / PV
-                  </Text>
+                  <AppText style={[styles.legendText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                    Zielona: Tani / PV
+                  </AppText>
                 </View>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#EAB308' }]} />
-                  <Text style={[styles.legendText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                  <AppText style={[styles.legendText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                     Żółta: Średnia
-                  </Text>
+                  </AppText>
                 </View>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#EF4444' }]} />
-                  <Text style={[styles.legendText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                  <AppText style={[styles.legendText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                     Czerwona: Szczyt
-                  </Text>
+                  </AppText>
                 </View>
               </View>
             </Card>
@@ -168,14 +163,14 @@ export default function ScheduleScreen() {
             <Card style={styles.timelineCard}>
               <View style={styles.timelineHeader}>
                 <View style={styles.timelineTitleGroup}>
-                  <Ionicons name="time" size={18} color={Palette.radioactiveGrass} />
-                  <Text style={[styles.timelineTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                    Harmonogram 24 godzin (Wybierz godzinę)
-                  </Text>
+                  <Ionicons name="time" size={20} color={Palette.radioactiveGrass} />
+                  <AppText style={[styles.timelineTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    Harmonogram 24h (Dotknij godzinę)
+                  </AppText>
                 </View>
-                <Text style={[styles.timelineCurrentHour, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                <AppText style={[styles.timelineCurrentHour, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                   Teraz: {currentHourNow}:00
-                </Text>
+                </AppText>
               </View>
 
               <View style={styles.slotsGrid}>
@@ -205,6 +200,8 @@ export default function ScheduleScreen() {
                     <Pressable
                       key={slot.hour}
                       onPress={() => setSelectedHour(slot)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Godzina ${slot.hour}:00, stawka ${safeToFixed(slot.price_per_kwh, 2)} euro`}
                       style={[
                         styles.slotBtn,
                         {
@@ -213,10 +210,10 @@ export default function ScheduleScreen() {
                           borderWidth: isSelected || isCurrent ? 2 : 1,
                         },
                       ]}>
-                      <Text style={[styles.slotHour, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                      <AppText style={[styles.slotHour, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                         {slot.hour}:00
-                      </Text>
-                      <Text
+                      </AppText>
+                      <AppText
                         style={[
                           styles.slotPrice,
                           {
@@ -234,11 +231,11 @@ export default function ScheduleScreen() {
                                 : '#991B1B',
                           },
                         ]}>
-                        {safeToFixed(slot.price_per_kwh, 2)}
-                      </Text>
+                        {safeToFixed(slot.price_per_kwh, 2)} €
+                      </AppText>
                       {isCurrent ? (
                         <View style={styles.nowBadge}>
-                          <Text style={styles.nowBadgeText}>TERAZ</Text>
+                          <AppText style={styles.nowBadgeText}>TERAZ</AppText>
                         </View>
                       ) : null}
                     </Pressable>
@@ -262,20 +259,20 @@ export default function ScheduleScreen() {
                     },
                   ]}>
                   <View style={styles.selectedHourHeader}>
-                    <Text style={[styles.selectedHourTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.selectedHourTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                       Szczegóły: {selectedHour.hour_label}
-                    </Text>
+                    </AppText>
                     <StatusBadge zone={selectedHour.status_code} label={selectedHour.badge} />
                   </View>
-                  <Text style={[styles.selectedHourRate, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                  <AppText style={[styles.selectedHourRate, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                     Stawka:{' '}
-                    <Text style={{ fontWeight: '800', color: isDark ? Palette.chartreuse : Palette.sageGreen }}>
+                    <AppText style={{ fontWeight: '800', color: isDark ? Palette.chartreuse : Palette.sageGreen }}>
                       {safeToFixed(selectedHour.price_per_kwh, 3)} €/kWh
-                    </Text>
-                  </Text>
-                  <Text style={[styles.selectedHourAction, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+                    </AppText>
+                  </AppText>
+                  <AppText style={[styles.selectedHourAction, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
                     💡 {selectedHour.recommended_action || getSlotActionFallback(selectedHour.status_code)}
-                  </Text>
+                  </AppText>
                 </View>
               ) : null}
             </Card>
@@ -285,51 +282,51 @@ export default function ScheduleScreen() {
               <>
                 <View style={styles.sectionTitleRow}>
                   <Ionicons name="sparkles" size={18} color={Palette.radioactiveGrass} />
-                  <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                     Rekomendowane Okna Czasowe
-                  </Text>
+                  </AppText>
                 </View>
 
                 <View style={styles.windowsList}>
                   <Card style={styles.windowCard}>
                     <View style={styles.windowHeader}>
-                      <Text style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                         ☀️ {bestWindows.day_solar_window.label}
-                      </Text>
+                      </AppText>
                       <StatusBadge variant="green" label={bestWindows.day_solar_window.hours} />
                     </View>
-                    <Text style={[styles.windowDesc, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                    <AppText style={[styles.windowDesc, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                       Dla kogo: {bestWindows.day_solar_window.for_who}
-                    </Text>
+                    </AppText>
                     {bestWindows.day_solar_window.recommended_devices ? (
-                      <Text style={[styles.windowExtra, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                      <AppText style={[styles.windowExtra, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                         Zalecane AGD: {bestWindows.day_solar_window.recommended_devices.join(', ')}
-                      </Text>
+                      </AppText>
                     ) : null}
                   </Card>
 
                   <Card style={styles.windowCard}>
                     <View style={styles.windowHeader}>
-                      <Text style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                         🌙 {bestWindows.night_valley_window.label}
-                      </Text>
+                      </AppText>
                       <StatusBadge variant="blue" label={bestWindows.night_valley_window.hours} />
                     </View>
-                    <Text style={[styles.windowDesc, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                    <AppText style={[styles.windowDesc, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                       Dla kogo: {bestWindows.night_valley_window.for_who}
-                    </Text>
+                    </AppText>
                   </Card>
 
                   <Card style={styles.windowCard}>
                     <View style={styles.windowHeader}>
-                      <Text style={[styles.windowTitle, { color: '#EF4444' }]}>
+                      <AppText style={[styles.windowTitle, { color: '#EF4444' }]}>
                         ⚠️ {bestWindows.peak_avoid_window.label}
-                      </Text>
+                      </AppText>
                       <StatusBadge variant="red" label={bestWindows.peak_avoid_window.hours} />
                     </View>
-                    <Text style={[styles.windowDesc, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                    <AppText style={[styles.windowDesc, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                       Porada: {bestWindows.peak_avoid_window.advice}
-                    </Text>
+                    </AppText>
                   </Card>
                 </View>
               </>
@@ -338,76 +335,110 @@ export default function ScheduleScreen() {
             {/* Section: Porady dla Pokoleń */}
             <View style={styles.sectionTitleRow}>
               <Ionicons name="people" size={18} color={Palette.sageGreen} />
-              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                 Porady dedykowane dla pokoleń
-              </Text>
+              </AppText>
             </View>
 
             <SegmentedControl
               value={selectedAudience}
               onChange={(val) => setSelectedAudience(val as AudienceKey)}
               options={[
-                { value: 'dziadkowie', label: 'Dla dziadków' },
-                { value: 'mlodziez', label: 'Dla młodzieży' },
-                { value: 'rodzice', label: 'Dla rodziców' },
+                { value: 'dziadkowie', label: '👓 Dla dziadków' },
+                { value: 'mlodziez', label: '⚡ Dla młodzieży' },
+                { value: 'rodzice', label: '💼 Dla rodziców' },
               ]}
             />
 
-            {currentTipText ? (
-              <Card style={styles.tipCard}>
-                <View style={styles.tipHeader}>
-                  <View style={[styles.tipIconCircle, { backgroundColor: isDark ? '#2B3037' : '#EBF9E6' }]}>
-                    <Ionicons
-                      name={
+            <Card highlightZone={selectedAudience === 'dziadkowie' ? 'green' : 'yellow'} style={styles.tipCard}>
+              <View style={styles.tipHeader}>
+                <View
+                  style={[
+                    styles.tipIconCircle,
+                    {
+                      backgroundColor:
                         selectedAudience === 'dziadkowie'
-                          ? 'sunny'
+                          ? isDark
+                            ? 'rgba(132, 221, 99, 0.2)'
+                            : '#EBF9E6'
                           : selectedAudience === 'mlodziez'
-                          ? 'game-controller'
-                          : 'shield-checkmark'
-                      }
-                      size={20}
-                      color={Palette.radioactiveGrass}
-                    />
-                  </View>
-                  <Text style={[styles.tipTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                    {selectedAudience === 'dziadkowie'
-                      ? 'Dziadkowie w domu (9:00 - 14:00)'
-                      : selectedAudience === 'mlodziez'
-                      ? 'Młodzież i dzieci (po 14:00)'
-                      : 'Rodzice (wieczorem i rano)'}
-                  </Text>
+                          ? isDark
+                            ? 'rgba(203, 255, 77, 0.2)'
+                            : '#FEF9C3'
+                          : isDark
+                          ? 'rgba(107, 170, 117, 0.2)'
+                          : '#EDF1EE',
+                    },
+                  ]}>
+                  <Ionicons
+                    name={
+                      selectedAudience === 'dziadkowie'
+                        ? 'home'
+                        : selectedAudience === 'mlodziez'
+                        ? 'game-controller'
+                        : 'briefcase'
+                    }
+                    size={18}
+                    color={
+                      selectedAudience === 'dziadkowie'
+                        ? Palette.radioactiveGrass
+                        : selectedAudience === 'mlodziez'
+                        ? '#CA8A04'
+                        : Palette.sageGreen
+                    }
+                  />
                 </View>
+                <AppText style={[styles.tipTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  {selectedAudience === 'dziadkowie'
+                    ? 'Porady dla Dziadków w domu'
+                    : selectedAudience === 'mlodziez'
+                    ? 'Porady dla Młodzieży i dzieci'
+                    : 'Porady dla Pracujących Rodziców'}
+                </AppText>
+              </View>
 
-                <Text style={[styles.tipText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
-                  {currentTipText}
-                </Text>
-              </Card>
-            ) : null}
+              <AppText style={[styles.tipText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                {currentTipText}
+              </AppText>
+            </Card>
 
-            {/* Tariffs Breakdown Section */}
-            {tariffs ? (
+            {/* Official Tariffs Overview */}
+            {tariffs && tariffs.periods ? (
               <>
                 <View style={styles.sectionTitleRow}>
-                  <Ionicons name="pricetags" size={18} color={Palette.charcoal} />
-                  <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                    Strefy Taryfowe ({tariffs.currency})
-                  </Text>
+                  <Ionicons name="pricetags" size={18} color={Palette.slateGrey} />
+                  <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    Oficjalne Taryfy Dobowe
+                  </AppText>
                 </View>
 
                 <View style={styles.tariffsList}>
-                  {tariffs.periods.map((period, idx) => (
+                  {tariffs.periods.map((t, idx) => (
                     <Card key={idx} style={styles.tariffCard}>
                       <View style={styles.tariffHeader}>
-                        <Text style={[styles.tariffLabel, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                          {period.label}
-                        </Text>
-                        <Text style={[styles.tariffPrice, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
-                          {safeToFixed(period.price_per_kwh, 2)} €/kWh
-                        </Text>
+                        <AppText style={[styles.tariffLabel, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                          {t.label}
+                        </AppText>
+                        <AppText
+                          style={[
+                            styles.tariffPrice,
+                            {
+                              color:
+                                t.price_per_kwh <= 0.18
+                                  ? isDark
+                                    ? Palette.chartreuse
+                                    : Palette.sageGreen
+                                  : t.price_per_kwh <= 0.28
+                                  ? '#EAB308'
+                                  : '#EF4444',
+                            },
+                          ]}>
+                          {safeToFixed(t.price_per_kwh, 3)} €/kWh
+                        </AppText>
                       </View>
-                      <Text style={[styles.tariffHours, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                        Godziny: {period.start_hour}:00 – {period.end_hour}:00
-                      </Text>
+                      <AppText style={[styles.tariffHours, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                        Godziny: {t.start_hour}:00 – {t.end_hour}:00
+                      </AppText>
                     </Card>
                   ))}
                 </View>
@@ -416,11 +447,11 @@ export default function ScheduleScreen() {
           </>
         ) : (
           <ErrorStateCard
-            error={scheduleError || { message: 'Nie udało się pobrać harmonogramu z serwera.' }}
+            error={scheduleError || { message: 'Błąd pobierania harmonogramu.' }}
             sourceUrl={scheduleUrl}
             onRetry={handleRefresh}
             isRetrying={scheduleRefreshing}
-            title="Błąd harmonogramu"
+            title="Brak harmonogramu"
           />
         )}
       </ScrollView>
@@ -433,26 +464,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 8,
     alignSelf: 'center',
     width: '100%',
-    gap: 16,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  screenTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  screenSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
+    gap: 14,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -470,6 +486,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   legendItem: {
     flexDirection: 'row',
@@ -477,56 +495,64 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 3,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   legendText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '700',
   },
   timelineCard: {
-    gap: 14,
+    gap: 12,
   },
   timelineHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   timelineTitleGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flex: 1,
+    minWidth: 160,
   },
   timelineTitle: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '800',
   },
   timelineCurrentHour: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   slotsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'space-between',
     gap: 6,
   },
   slotBtn: {
-    width: '14.8%',
-    minWidth: 42,
-    paddingVertical: 6,
-    borderRadius: 8,
+    width: '23.5%',
+    minWidth: 64,
+    minHeight: 52,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+    marginVertical: 2,
   },
   slotHour: {
-    fontSize: 10,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
   },
   slotPrice: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '900',
     marginTop: 2,
   },
   nowBadge: {
@@ -534,11 +560,11 @@ const styles = StyleSheet.create({
     top: -6,
     backgroundColor: Palette.chartreuse,
     borderRadius: 4,
-    paddingHorizontal: 4,
+    paddingHorizontal: 5,
     paddingVertical: 1,
   },
   nowBadgeText: {
-    fontSize: 7,
+    fontSize: 8,
     fontWeight: '900',
     color: '#0F172A',
   },
@@ -553,17 +579,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   selectedHourTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
   },
   selectedHourRate: {
-    fontSize: 12,
+    fontSize: 13,
   },
   selectedHourAction: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 18,
   },
   sectionTitleRow: {
     flexDirection: 'row',
@@ -572,58 +600,61 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '900',
     letterSpacing: -0.3,
   },
   windowsList: {
     gap: 8,
   },
   windowCard: {
-    gap: 4,
+    gap: 6,
     padding: 12,
   },
   windowHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   windowTitle: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '800',
   },
   windowDesc: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 18,
   },
   windowExtra: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '800',
     marginTop: 2,
   },
   tipCard: {
-    gap: 8,
+    gap: 10,
     padding: 16,
   },
   tipHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+    flexWrap: 'wrap',
   },
   tipIconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tipTitle: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '900',
   },
   tipText: {
     fontSize: 13,
-    lineHeight: 19,
+    lineHeight: 20,
   },
   tariffsList: {
     gap: 8,
@@ -636,17 +667,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   tariffLabel: {
     fontSize: 13,
-    fontWeight: '700',
-  },
-  tariffPrice: {
-    fontSize: 13,
     fontWeight: '800',
   },
+  tariffPrice: {
+    fontSize: 14,
+    fontWeight: '900',
+  },
   tariffHours: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
   },
 });

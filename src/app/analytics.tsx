@@ -6,14 +6,14 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   useColorScheme,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
-import { ApiStatusIndicator } from '@/components/ui/ApiStatusIndicator';
+import { AppHeader } from '@/components/ui/AppHeader';
+import { AppText } from '@/components/ui/AppText';
 import { Card } from '@/components/ui/Card';
 import { ErrorStateCard } from '@/components/ui/ErrorStateCard';
 import { MetricTile } from '@/components/ui/MetricTile';
@@ -112,17 +112,17 @@ export default function AnalyticsScreen() {
               <View key={key} style={styles.catRow}>
                 <View style={styles.catLeft}>
                   <View style={[styles.catDot, { backgroundColor: cat.color }]} />
-                  <Text style={[styles.catName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.catName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                     {cat.label}
-                  </Text>
+                  </AppText>
                 </View>
                 <View style={styles.catRight}>
-                  <Text style={[styles.catVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  <AppText style={[styles.catVal, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                     {safeToFixed(val, 1)} kWh
-                  </Text>
-                  <Text style={[styles.catPct, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  </AppText>
+                  <AppText style={[styles.catPct, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                     ({pct}%)
-                  </Text>
+                  </AppText>
                 </View>
               </View>
             );
@@ -151,18 +151,13 @@ export default function AnalyticsScreen() {
             tintColor={Palette.radioactiveGrass}
           />
         }>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <View>
-            <Text style={[styles.screenTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-              Zużycie & Prognozy
-            </Text>
-            <Text style={[styles.screenSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-              Historia 6 kategorii, predykcja zapotrzebowania i metryki modelu
-            </Text>
-          </View>
-          <ApiStatusIndicator sourceUrl={historyUrl} onRefresh={handleRefresh} />
-        </View>
+        {/* Header with EkoDzik Mobile Logo & Accessibility Bar */}
+        <AppHeader
+          title="EkoDzik Mobile"
+          subtitle="Zużycie, Prognozy & Metryki Modelu"
+          sourceUrl={historyUrl}
+          onRefresh={handleRefresh}
+        />
 
         {/* ============================================================ */}
         {/* SECTION 1: PROGNOZA ZAPOTRZEBOWANIA */}
@@ -170,14 +165,14 @@ export default function AnalyticsScreen() {
         <Card highlightZone="yellow" style={styles.forecastCard}>
           <View style={styles.forecastHeader}>
             <View style={styles.forecastTitleGroup}>
-              <Ionicons name="trending-up" size={20} color={Palette.radioactiveGrass} />
-              <View>
-                <Text style={[styles.forecastTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <Ionicons name="trending-up" size={22} color={Palette.radioactiveGrass} />
+              <View style={{ flex: 1 }}>
+                <AppText style={[styles.forecastTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Prognoza Zapotrzebowania
-                </Text>
-                <Text style={[styles.forecastSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  Model AI z przewidywaniem szczytów i pogodą
-                </Text>
+                </AppText>
+                <AppText style={[styles.forecastSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  Model AI z przewidywaniem szczytów i pogody
+                </AppText>
               </View>
             </View>
             <StatusBadge variant="blue" label={`Horyzont ${forecastHorizon}h`} />
@@ -218,9 +213,9 @@ export default function AnalyticsScreen() {
               {/* Hourly Chart preview */}
               {forecastData.items && forecastData.items.length > 0 ? (
                 <>
-                  <Text style={[styles.chartSectionLabel, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+                  <AppText style={[styles.chartSectionLabel, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
                     Wykres godzinowy prognozy (kWh):
-                  </Text>
+                  </AppText>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chartScroll}>
                     <View style={styles.chartContainer}>
                       {forecastData.items.slice(0, 36).map((point, index) => {
@@ -231,9 +226,9 @@ export default function AnalyticsScreen() {
 
                         return (
                           <View key={index} style={styles.chartCol}>
-                            <Text style={[styles.chartVal, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                            <AppText style={[styles.chartVal, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                               {safeToFixed(point.total_kwh, 1)}
-                            </Text>
+                            </AppText>
                             <View style={[styles.chartTrack, { backgroundColor: isDark ? '#2E333A' : '#E2E8F0' }]}>
                               <View
                                 style={[
@@ -242,12 +237,12 @@ export default function AnalyticsScreen() {
                                     height: `${heightPercent}%`,
                                     backgroundColor: isHigh ? '#EF4444' : Palette.radioactiveGrass,
                                   },
-                                ]}>
-                              </View>
+                                ]}
+                              />
                             </View>
-                            <Text style={[styles.chartHour, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                            <AppText style={[styles.chartHour, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                               {hour}
-                            </Text>
+                            </AppText>
                           </View>
                         );
                       })}
@@ -259,9 +254,9 @@ export default function AnalyticsScreen() {
               {/* Peak Explanations */}
               {forecastData.peaks && forecastData.peaks.length > 0 ? (
                 <View style={styles.peaksSection}>
-                  <Text style={[styles.peaksHeader, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.peaksHeader, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                     Zidentyfikowane szczyty i wyjaśnienia:
-                  </Text>
+                  </AppText>
                   {forecastData.peaks.map((peak, idx) => {
                     const formattedDate = peak.timestamp
                       ? new Date(peak.timestamp).toLocaleString('pl-PL', {
@@ -282,14 +277,14 @@ export default function AnalyticsScreen() {
                         ]}>
                         <View style={styles.peakHeader}>
                           <View style={styles.peakLeft}>
-                            <Ionicons name="alert-circle" size={16} color="#EF4444" />
-                            <Text style={styles.peakHourText}>{formattedDate}</Text>
+                            <Ionicons name="alert-circle" size={18} color="#EF4444" />
+                            <AppText style={styles.peakHourText}>{formattedDate}</AppText>
                           </View>
                           <StatusBadge variant="red" label={`Szczyt: ${safeToFixed(peak.total_kwh, 2)} kWh`} />
                         </View>
-                        <Text style={[styles.peakExpl, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                        <AppText style={[styles.peakExpl, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
                           {safeString(peak.explanation)}
-                        </Text>
+                        </AppText>
                       </View>
                     );
                   })}
@@ -298,11 +293,9 @@ export default function AnalyticsScreen() {
             </>
           ) : (
             <ErrorStateCard
-              error={forecastError || { message: 'Brak danych prognozy z serwera backendu.' }}
-              sourceUrl={historyUrl}
+              error={forecastError || { message: 'Błąd pobierania prognozy.' }}
               onRetry={handleRefresh}
-              isRetrying={historyRefreshing}
-              title="Błąd ładowania prognozy zapotrzebowania"
+              title="Błąd prognozy"
             />
           )}
         </Card>
@@ -314,31 +307,30 @@ export default function AnalyticsScreen() {
           <Card style={styles.metricsCard}>
             <View style={styles.metricsHeader}>
               <View style={styles.metricsTitleGroup}>
-                <Ionicons name="hardware-chip" size={18} color={Palette.radioactiveGrass} />
-                <View>
-                  <Text style={[styles.metricsTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                    Dokładność Modelu Prognostycznego
-                  </Text>
-                  <Text style={[styles.metricsPeriod, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                    Okres: {metricsData.okres_od} do {metricsData.okres_do} ({metricsData.godzin}h)
-                  </Text>
+                <Ionicons name="shield-checkmark" size={20} color={Palette.radioactiveGrass} />
+                <View style={{ flex: 1 }}>
+                  <AppText style={[styles.metricsTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    Dokładność i Metryki Modelu AI
+                  </AppText>
+                  <AppText style={[styles.metricsPeriod, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    Zbiór: {metricsData.godzin} godzin • Status: Aktywny
+                  </AppText>
                 </View>
               </View>
-              <StatusBadge variant="green" label="Aktywny" />
             </View>
 
             <View style={styles.kpiRow}>
               <MetricTile
-                label="Błąd MAE (Model)"
-                value={safeToFixed(metricsData.mae_model, 3)}
-                unit="kWh"
-                subtitle={`Baseline: ${safeToFixed(metricsData.mae_baseline, 3)}`}
+                label="MAPE Modelu"
+                value={`${safeToFixed(metricsData.mape_model, 2)}%`}
+                subtitle={`Baza: ${safeToFixed(metricsData.mape_baseline, 2)}%`}
                 accentColor={Palette.radioactiveGrass}
               />
               <MetricTile
-                label="Błąd MAPE (Model)"
-                value={`${safeToFixed(metricsData.mape_model, 1)}%`}
-                subtitle={`Baseline: ${safeToFixed(metricsData.mape_baseline, 1)}%`}
+                label="MAE Błędu"
+                value={`${safeToFixed(metricsData.mae_model, 3)}`}
+                unit="kWh"
+                subtitle={`Baza: ${safeToFixed(metricsData.mae_baseline, 3)}`}
                 accentColor={isDark ? Palette.chartreuse : Palette.sageGreen}
               />
             </View>
@@ -346,13 +338,13 @@ export default function AnalyticsScreen() {
         ) : null}
 
         {/* ============================================================ */}
-        {/* SECTION 3: HISTORIA ZUŻYCIA */}
+        {/* SECTION 3: 6-CATEGORY CONSUMPTION HISTORY */}
         {/* ============================================================ */}
         <View style={styles.sectionTitleRow}>
           <Ionicons name="bar-chart" size={18} color={Palette.sageGreen} />
-          <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
             Historia zużycia z podziałem na 6 kategorii
-          </Text>
+          </AppText>
         </View>
 
         {historyLoading && !historyData ? (
@@ -362,12 +354,12 @@ export default function AnalyticsScreen() {
             {/* 6-Category Breakdown Card */}
             <Card style={styles.breakdownCard}>
               <View style={{ gap: 2 }}>
-                <Text style={[styles.breakdownTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.breakdownTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Struktura zużycia w okresie
-                </Text>
-                <Text style={[styles.breakdownSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                </AppText>
+                <AppText style={[styles.breakdownSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                   Łącznie: {safeToFixed(historyData.summary?.total_kwh, 1)} kWh ({historyData.summary?.start} do {historyData.summary?.end})
-                </Text>
+                </AppText>
               </View>
 
               {renderCategoryBreakdown(
@@ -379,12 +371,12 @@ export default function AnalyticsScreen() {
             {/* Daily Records with Pagination */}
             <Card style={styles.recordsCard}>
               <View style={styles.recordsHeader}>
-                <Text style={[styles.recordsTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.recordsTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                   Godzinowy rejestr pomiarów
-                </Text>
-                <Text style={[styles.pageIndicator, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                </AppText>
+                <AppText style={[styles.pageIndicator, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                   Strona {historyData.pagination?.page ?? 1} z {historyData.pagination?.total_pages ?? 1}
-                </Text>
+                </AppText>
               </View>
 
               {historyData.items.map((rec, idx) => {
@@ -397,41 +389,44 @@ export default function AnalyticsScreen() {
                       styles.recordRow,
                       { borderBottomColor: isDark ? '#2E333A' : '#E2E8F0' },
                     ]}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.recordDate, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <View style={{ flex: 1, minWidth: 160 }}>
+                      <AppText style={[styles.recordDate, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
                         {dateStr}{tempStr}
-                      </Text>
-                      <Text style={[styles.recordCategories, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                      </AppText>
+                      <AppText style={[styles.recordCategories, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         Ogrz: {safeToFixed(rec.categories?.Ogrzewanie_kWh, 2)} kWh • AGD: {safeToFixed(rec.categories?.Duze_AGD_kWh, 2)} kWh • RTV: {safeToFixed(rec.categories?.RTV_PC_kWh, 2)} kWh
-                      </Text>
+                      </AppText>
                     </View>
-                    <View style={{ alignItems: 'flex-end' }}>
-                      <Text style={[styles.recordKwh, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                    <View style={{ alignItems: 'flex-end', minWidth: 80 }}>
+                      <AppText style={[styles.recordKwh, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                         {safeToFixed(rec.total_kwh, 3)} kWh
-                      </Text>
+                      </AppText>
                     </View>
                   </View>
                 );
               })}
 
-              {/* Pagination Controls */}
+              {/* Pagination Controls (Large 44px Buttons) */}
               <View style={styles.paginationRow}>
                 <Pressable
                   disabled={!historyData.pagination.has_previous}
                   onPress={() => setHistoryPage((p) => Math.max(1, p - 1))}
+                  accessibilityRole="button"
+                  accessibilityLabel="Poprzednia strona historii"
                   style={[
                     styles.pageBtn,
                     {
                       borderColor: isDark ? '#373C44' : '#CBD5E1',
                       opacity: historyData.pagination.has_previous ? 1 : 0.4,
+                      backgroundColor: isDark ? '#2B3037' : '#EDF1EE',
                     },
                   ]}>
                   <Ionicons
                     name="chevron-back"
-                    size={16}
+                    size={18}
                     color={historyData.pagination.has_previous ? Palette.radioactiveGrass : Palette.slateGrey}
                   />
-                  <Text
+                  <AppText
                     style={[
                       styles.pageBtnText,
                       {
@@ -443,20 +438,23 @@ export default function AnalyticsScreen() {
                       },
                     ]}>
                     Poprzednia
-                  </Text>
+                  </AppText>
                 </Pressable>
 
                 <Pressable
                   disabled={!historyData.pagination.has_next}
                   onPress={() => setHistoryPage((p) => p + 1)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Następna strona historii"
                   style={[
                     styles.pageBtn,
                     {
                       borderColor: isDark ? '#373C44' : '#CBD5E1',
                       opacity: historyData.pagination.has_next ? 1 : 0.4,
+                      backgroundColor: isDark ? '#2B3037' : '#EDF1EE',
                     },
                   ]}>
-                  <Text
+                  <AppText
                     style={[
                       styles.pageBtnText,
                       {
@@ -468,10 +466,10 @@ export default function AnalyticsScreen() {
                       },
                     ]}>
                     Następna
-                  </Text>
+                  </AppText>
                   <Ionicons
                     name="chevron-forward"
-                    size={16}
+                    size={18}
                     color={historyData.pagination.has_next ? Palette.radioactiveGrass : Palette.slateGrey}
                   />
                 </Pressable>
@@ -497,26 +495,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 8,
     alignSelf: 'center',
     width: '100%',
-    gap: 16,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  screenTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  screenSubtitle: {
-    fontSize: 12,
-    marginTop: 2,
+    gap: 14,
   },
   forecastCard: {
     gap: 14,
@@ -525,11 +508,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   forecastTitleGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flex: 1,
+    minWidth: 180,
   },
   forecastTitle: {
     fontSize: 15,
@@ -541,6 +528,7 @@ const styles = StyleSheet.create({
   },
   kpiRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
     marginTop: 4,
   },
@@ -604,6 +592,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   peakLeft: {
     flexDirection: 'row',
@@ -627,11 +617,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   metricsTitleGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flex: 1,
+    minWidth: 180,
   },
   metricsTitle: {
     fontSize: 14,
@@ -647,8 +641,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '900',
     letterSpacing: -0.3,
   },
   breakdownCard: {
@@ -666,8 +660,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   multiBar: {
-    height: 12,
-    borderRadius: 6,
+    height: 14,
+    borderRadius: 7,
     overflow: 'hidden',
     flexDirection: 'row',
   },
@@ -678,12 +672,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
     paddingVertical: 2,
   },
   catLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flex: 1,
+    minWidth: 120,
   },
   catDot: {
     width: 10,
@@ -714,6 +712,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   recordsTitle: {
     fontSize: 14,
@@ -726,37 +726,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    flexWrap: 'wrap',
+    gap: 8,
+    paddingVertical: 10,
     borderBottomWidth: 1,
   },
   recordDate: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '800',
   },
   recordCategories: {
-    fontSize: 10,
+    fontSize: 11,
     marginTop: 2,
   },
   recordKwh: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 13,
+    fontWeight: '900',
   },
   paginationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 6,
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 8,
   },
   pageBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
     borderWidth: 1,
+    minHeight: 44,
   },
   pageBtnText: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
   },
 });

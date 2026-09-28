@@ -23,7 +23,6 @@ export function ErrorStateCard({
   isRetrying = false,
   title = 'Brak połączenia z API',
 }: ErrorStateCardProps) {
-  const cfg = envConfig.get();
   const resolvedUrl = envConfig.getResolvedBaseUrl();
   const hasToken = envConfig.hasBearerToken();
 
@@ -81,7 +80,7 @@ export function ErrorStateCard({
           </Text>
         ) : (
           <Text className="text-[11px] leading-[16px] dark:text-gray-300">
-            Upewnij się, że serwer backendu pod adresem <Text className="font-semibold">{cfg.apiBaseUrl}</Text> jest uruchomiony i akceptuje połączenia. (W emulatorze Android localhost jest automatycznie tłumaczony na 10.0.2.2).
+            Upewnij się, że serwer backendu pod adresem <Text className="font-semibold">{envConfig.getResolvedBaseUrl()}</Text> jest uruchomiony na <Text className="font-semibold">0.0.0.0:8000</Text> i oba urządzenia są w tej samej sieci Wi-Fi.
           </Text>
         )}
       </View>

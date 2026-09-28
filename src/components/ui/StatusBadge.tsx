@@ -1,6 +1,8 @@
+import React from 'react';
 import { Palette } from '@/constants/theme';
 import { ScheduleZone } from '@/types/api';
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { StyleSheet, useColorScheme, View } from 'react-native';
+import { AppText } from '@/components/ui/AppText';
 
 interface StatusBadgeProps {
   zone?: ScheduleZone;
@@ -63,14 +65,14 @@ export function StatusBadge({ zone, variant, label, size = 'small' }: StatusBadg
         { backgroundColor: colors.bg, borderColor: colors.border },
       ]}>
       <View style={[styles.dot, { backgroundColor: colors.dot }]} />
-      <Text
+      <AppText
         style={[
           styles.text,
           size === 'small' ? styles.textSmall : styles.textMedium,
           { color: colors.text },
         ]}>
         {label}
-      </Text>
+      </AppText>
     </View>
   );
 }
@@ -83,6 +85,7 @@ const styles = StyleSheet.create({
     gap: 5,
     borderRadius: 20,
     borderWidth: 1,
+    flexShrink: 1,
   },
   badgeSmall: {
     paddingHorizontal: 8,

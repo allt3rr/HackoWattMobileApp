@@ -3,6 +3,8 @@
  * Connects directly to live backend server via Bearer Token authorization.
  */
 
+import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
 export interface AppEnvConfig {
@@ -12,13 +14,51 @@ export interface AppEnvConfig {
 }
 
 /**
- * Resolves localhost URL automatically for Android emulators (which use 10.0.2.2)
- * while preserving standard localhost/127.0.0.1 for Web and iOS.
+ * Extracts host IP address from Expo bundler if available.
+ */
+export function getExpoHostIp(): string | null {
+  try {
+    const hostUri =
+      Constants.expoConfig?.hostUri ||
+      (Constants as { manifest2?: { extra?: { expoClient?: { hostUri?: string } } } })?.manifest2?.extra?.expoClient?.hostUri ||
+      (Constants as { manifest?: { debuggerHost?: string } })?.manifest?.debuggerHost;
+
+    if (hostUri) {
+      const host = hostUri.split(':')[0];
+      if (host && host.trim().length > 0 && host !== 'localhost' && host !== '127.0.0.1') {
+        return host.trim();
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+/**
+ * Resolves localhost URL automatically:
+ * - On physical devices: maps localhost/127.0.0.1 to Expo host IP or LAN fallback (e.g. 192.168.0.161)
+ * - On Android emulators: maps localhost/127.0.0.1 to 10.0.2.2
+ * - On Web and iOS simulators: keeps localhost as is.
  */
 export function resolvePlatformUrl(url: string): string {
-  if (Platform.OS === 'android') {
-    return url.replace('://localhost', '://10.0.2.2').replace('://127.0.0.1', '://10.0.2.2');
+  if (!url) return url;
+
+  const isPhysical = Device.isDevice;
+
+  if (isPhysical) {
+    const devHost = getExpoHostIp() || '192.168.0.161';
+    return url
+      .replace('://localhost', `://${devHost}`)
+      .replace('://127.0.0.1', `://${devHost}`);
   }
+
+  if (Platform.OS === 'android') {
+    return url
+      .replace('://localhost', '://10.0.2.2')
+      .replace('://127.0.0.1', '://10.0.2.2');
+  }
+
   return url;
 }
 

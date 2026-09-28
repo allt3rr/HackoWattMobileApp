@@ -1,5 +1,5 @@
 import { hackoWattApi } from '@/api/endpoints';
-import { envConfig } from '@/config/env';
+import { envConfig, resolvePlatformUrl } from '@/config/env';
 import { Palette } from '@/constants/theme';
 import { useEffect, useState } from 'react';
 import {
@@ -107,13 +107,18 @@ export function ApiStatusIndicator({ sourceUrl, onRefresh }: ApiStatusIndicatorP
             </Text>
 
             <View style={{ gap: 6 }}>
-              <Text style={{ fontSize: 12, fontWeight: '700', color: isDark ? '#E2E8F0' : '#1C2024' }}>
-                API Base URL (np. http://localhost:8000)
-              </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={{ fontSize: 12, fontWeight: '700', color: isDark ? '#E2E8F0' : '#1C2024' }}>
+                  API Base URL
+                </Text>
+                <Text style={{ fontSize: 10, color: isDark ? '#94A3B8' : '#64748B' }}>
+                  Cel: {resolvePlatformUrl(editUrl)}
+                </Text>
+              </View>
               <TextInput
                 value={editUrl}
                 onChangeText={setEditUrl}
-                placeholder="http://localhost:8000"
+                placeholder="http://192.168.0.161:8000"
                 placeholderTextColor={Palette.slateGrey}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -128,6 +133,50 @@ export function ApiStatusIndicator({ sourceUrl, onRefresh }: ApiStatusIndicatorP
                   backgroundColor: isDark ? '#181A1D' : '#F8FAFC',
                 }}
               />
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 2 }}>
+                <Pressable
+                  onPress={() => setEditUrl('http://192.168.0.161:8000')}
+                  style={{
+                    backgroundColor: isDark ? '#2B3037' : '#F1F5F9',
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: isDark ? '#3E444E' : '#E2E8F0',
+                  }}>
+                  <Text style={{ fontSize: 11, color: isDark ? '#E2E8F0' : '#475569', fontWeight: '600' }}>
+                    📱 Wi-Fi LAN (192.168.0.161)
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setEditUrl('http://10.0.2.2:8000')}
+                  style={{
+                    backgroundColor: isDark ? '#2B3037' : '#F1F5F9',
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: isDark ? '#3E444E' : '#E2E8F0',
+                  }}>
+                  <Text style={{ fontSize: 11, color: isDark ? '#E2E8F0' : '#475569', fontWeight: '600' }}>
+                    🤖 Emulator (10.0.2.2)
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setEditUrl('http://localhost:8000')}
+                  style={{
+                    backgroundColor: isDark ? '#2B3037' : '#F1F5F9',
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: isDark ? '#3E444E' : '#E2E8F0',
+                  }}>
+                  <Text style={{ fontSize: 11, color: isDark ? '#E2E8F0' : '#475569', fontWeight: '600' }}>
+                    💻 Localhost
+                  </Text>
+                </Pressable>
+              </View>
             </View>
 
             <View style={{ gap: 6 }}>
