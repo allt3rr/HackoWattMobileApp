@@ -20,7 +20,7 @@
 - [Wymagania i Konfiguracja / Configuration](#-wymagania-i-konfiguracja--configuration)
 - [Instalacja i Uruchomienie / Getting Started](#-instalacja-i-uruchomienie--getting-started)
 - [Weryfikacja jakości kodu / Quality Assurance](#-weryfikacja-jakości-kodu--quality-assurance)
-- [Licencja / License](#-licencja--license)
+- [Licencja / License]#-licencja--license
 
 ---
 
