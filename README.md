@@ -1,252 +1,752 @@
-# ⚡ HackoWatt Mobile
+# HackoWatt Mobile
 
-> **Next-generation cross-platform mobile application for smart energy management, dynamic tariff optimization, solar PV & battery storage simulations, and AI-driven consumption forecasting.**
+> Mobilna aplikacja do monitorowania i optymalizacji zużycia energii, analizy taryf, zarządzania elastycznymi urządzeniami oraz symulacji instalacji fotowoltaicznej i magazynu energii.
 
-[![React Native](https://img.shields.io/badge/React_Native-0.86-61DAFB?logo=react&logoColor=white)](https://reactnative.dev)
-[![Expo](https://img.shields.io/badge/Expo_SDK-57-000020?logo=expo&logoColor=white)](https://expo.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android%20%7C%20Web-brightgreen)](#)
-[![Code Quality](https://img.shields.io/badge/Typecheck_%26_Lint-Passing-success)](#)
+**HackoWatt Mobile** jest frontendem mobilnym projektu HackoWatt. Aplikacja komunikuje się z backendem Django poprzez REST API i prezentuje użytkownikowi dane dotyczące zużycia energii, kosztów, prognoz, urządzeń oraz instalacji PV.
 
----
+Aplikacja jest przygotowana jako **Universal App** i może działać na:
 
-## 📖 Spis treści / Table of Contents
-- [Przegląd projektu / Overview](#-przegląd-projektu--overview)
-- [Główne moduły i ekrany / Key Features](#-główne-moduły-i-ekrany--key-features)
-- [Paleta barw i Design System / Color Palette](#-paleta-barw-i-design-system--color-palette)
-- [Architektura projektu / Architecture](#-architektura-projektu--architecture)
-- [Integracja z Backendem API / Backend API](#-integracja-z-backendem-api--backend-api)
-- [Wymagania i Konfiguracja / Configuration](#-wymagania-i-konfiguracja--configuration)
-- [Instalacja i Uruchomienie / Getting Started](#-instalacja-i-uruchomienie--getting-started)
-- [Weryfikacja jakości kodu / Quality Assurance](#-weryfikacja-jakości-kodu--quality-assurance)
-- [Licencja / License]#-licencja--license
+*  Android
+*  Web
+
+Projekt wykorzystuje **React Native + Expo + TypeScript**.
 
 ---
 
-## 🌟 Przegląd projektu / Overview
+## Najważniejsze funkcje
 
-**HackoWatt Mobile** to nowoczesna, responsywna aplikacja mobilna i webowa (Universal App) stworzona w oparciu o **React Native**, **Expo SDK 57** i **Expo Router**. Aplikacja łączy się bezpośrednio z serwerem analityczno-energetycznym Django przez REST API (Bearer token) i przetwarza dane w czasie rzeczywistym, eliminując jakiekolwiek sztuczne dane testowe (mock data).
+### Dashboard
 
-Aplikacja rozwiązuje kluczowe wyzwania współczesnej transformacji energetycznej:
-- **Optymalizacja kosztów przy taryfach dynamicznych**: informuje użytkownika o bieżących stawkach i przewiduje najtańsze okna cenowe.
-- **Maksymalizacja autokonsumpcji ze słońca (PV)**: sugeruje harmonogram uruchamiania urządzeń AGD w godzinach najwyższej generacji fotowoltaicznej.
-- **Kalkulacja magazynów energii**: symuluje zyski z dołożenia baterii do instalacji PV oraz wylicza szacunkowy zwrot z inwestycji (ROI).
-- **Zaawansowane prognozowanie AI**: wizualizuje przewidywane zużycie na 24h, 72h i 7 dni w przód wraz z metrykami jakości modelu (MAE, MAPE).
+Główny ekran prezentuje najważniejsze informacje o aktualnej sytuacji energetycznej domu:
 
----
+* bieżącą stawkę energii,
+* aktualną moc,
+* napięcie,
+* natężenie prądu,
+* współczynnik mocy,
+* zużycie z ostatnich 24 godzin,
+* szacowany koszt energii,
+* dominującą kategorię zużycia,
+* ostrzeżenie przed godziną szczytową.
 
-## 📱 Główne moduły i ekrany / Key Features
-
-Aplikacja składa się z 5 zintegrowanych ekranów dostępnych przez dolny pasek nawigacji (na urządzeniach mobilnych) oraz responsywny górny pasek zakładek (na webie / tabletach):
-
-### 1. 🏠 Pulpit Główny (`/` — `src/app/index.tsx`)
-- **Karta bieżącej stawki**: dynamiczna ocena stawki (Tania / Umiarkowana / Droga) ze wskaźnikami strefowymi i średnią ceną dnia.
-- **Ostatni odczyt licznika na żywo**: pomiar mocy czynnej (kW), natężenia prądu (A), napięcia sieci (V) oraz współczynnika mocy ($\cos\varphi$).
-- **Alert zbliżającego się szczytu**: wyprzedzające ostrzeżenie przed godziną o najwyższym koszcie energii.
-- **Podsumowanie 24h**: skumulowane zużycie dobowe (kWh), łączny koszt (PLN/EUR) i dominująca kategoria obciążenia.
-- **Szybkie kafelki nawigacyjne**: bezpośrednie przejścia do harmonogramu, urządzeń, fotowoltaiki i analityki.
-
-### 2. 📅 Inteligentny Harmonogram (`/schedule` — `src/app/schedule.tsx`)
-- **24-godzinna oś czasu**: szczegółowa lista wszystkich godzin doby z podziałem na strefy cenowe (Zielona, Żółta, Czerwona).
-- **Wskaźnik "TERAZ"**: automatyczne podświetlenie bieżącej godziny z neonowym akcentem.
-- **Rekomendacje generacji słonecznej**: inteligentne podpowiedzi autokonsumpcji (np. darmowy prąd ze słońca w godzinach 12:00–14:00).
-- **Legenda stref taryfowych**: wyjaśnienie progów cenowych i optymalnych przedziałów czasowych.
-
-### 3. 🔌 Urządzenia i Przesunięcie Pracy (`/devices` — `src/app/devices.tsx`)
-- **Przewodnik po urządzeniach (Guidance)**: profile poboru mocy i rekomendacje dla zmywarki, pralki, suszarki, piekarnika i stacji ładowania EV.
-- **Interaktywny symulator przesunięcia obciążenia (Shift Simulation)**:
-  - Wybór urządzenia i liczby cykli w tygodniu (1–14).
-  - Wybór godziny pierwotnej (np. szczyt 19:00) i docelowej (np. 13:00 lub tania nocna strefa 02:00).
-  - Natychmiastowe przeliczenie oszczędności na cykl, w skali miesiąca oraz w ujęciu rocznym.
-- **Dziennik elastycznych cykli pracy**: historia zdarzeń z filtrowaniem i statusami wykonania.
-
-### 4. ☀️ Fotowoltaika i Magazyn Energii (`/solar` — `src/app/solar.tsx`)
-- **Interaktywny selektor mocy PV**: płynna regulacja wielkości instalacji (2–10 kWp).
-- **Porównanie Wariantu A vs Wariantu B**:
-  - **Wariant A**: instalacja fotowoltaiczna bez magazynu.
-  - **Wariant B**: instalacja PV połączona z domowym magazynem energii.
-- **Kluczowe wskaźniki**: autokonsumpcja (%), eksport do sieci (%), roczne oszczędności finansowe oraz okres zwrotu z inwestycji (ROI w latach).
-- **Tabela porównawcza wariantów**: pełne zestawienie mocy od 2 do 10 kWp z prognozowaną produkcją roczną.
-- **Założenia techniczne**: parametry degradacji paneli, sprawności falownika i pojemności akumulatora.
-
-### 5. 📊 Analityka i Prognozy AI (`/analytics` — `src/app/analytics.tsx`)
-- **Wybór horyzontu predykcji**: przełącznik prognoz na 24 godziny, 72 godziny (3 dni) lub 168 godzin (7 dni).
-- **Wykres słupkowy prognozy zużycia**: interaktywna wizualizacja profilu zapotrzebowania z kolorami strefowymi i wyróżnieniem szczytów.
-- **Wyjaśnienia szczytów zapotrzebowania**: moduł interpretacji przyczyn wzrostu obciążenia (np. dogrzewanie, powrót domowników).
-- **Metryki dokładności modelu ML**: rzeczywiste parametry modelu prognostycznego (MAE w kW oraz MAPE w %).
-- **Rozbicie zużycia na 6 kategorii**: ogrzewanie, duże AGD, oświetlenie, elektronika, ładowanie pojazdów EV i inne.
-
-### 6. 🌐 Wskaźnik Statusu API na Żywo (`ApiStatusIndicator`)
-- Zawsze widoczna w prawym dolnym rogu pigułka informująca o stanie połączenia z backendem.
-- Mierzy opóźnienie w milisekundach (latency) w czasie rzeczywistym.
-- Umożliwia dynamiczną zmianę adresu serwera oraz podgląd zamaskowanego klucza autoryzacyjnego w modalnym oknie diagnostycznym.
+Dostępne są również szybkie przejścia do pozostałych modułów aplikacji.
 
 ---
 
-## 🎨 Paleta barw i Design System / Color Palette
+### Inteligentny harmonogram
 
-Interfejs użytkownika został zaprojektowany z zachowaniem zasad **ergonomii mobilnej, wysokiego kontrastu i czytelności**. Kolorystyka opiera się na 5-stopniowej harmonijnej palecie:
+Ekran harmonogramu pokazuje pełne **24 godziny doby** wraz z informacjami o:
 
-| Kolor | Hex | Nazwa | Zastosowanie w interfejsie |
-| :--- | :--- | :--- | :--- |
-| <img src="https://via.placeholder.com/20/545454/545454.png" width="20" height="20" /> | `#545454` | **Charcoal** | Neutralne tła kart w trybie ciemnym, wyraziste nagłówki, ramki strukturalne |
-| <img src="https://via.placeholder.com/20/69747C/69747C.png" width="20" height="20" /> | `#69747C` | **Slate Grey** | Tekst pomocniczy, etykiety jednostek miar, nieaktywne ikony i ramki |
-| <img src="https://via.placeholder.com/20/6BAA75/6BAA75.png" width="20" height="20" /> | `#6BAA75` | **Sage Green** | Wtórna zieleń ekologiczna, ikony modułów, stabilne wskaźniki oszczędności |
-| <img src="https://via.placeholder.com/20/84DD63/84DD63.png" width="20" height="20" /> | `#84DD63` | **Radioactive Grass** | Główny kolor akcji, tania strefa taryfowa, zysk PV, kropka live API |
-| <img src="https://via.placeholder.com/20/CBFF4D/CBFF4D.png" width="20" height="20" /> | `#CBFF4D` | **Chartreuse** | Elektryczny neon: aktywne pigułki nawigacji, plakietka `TERAZ`, akcenty ROI |
+* strefach cenowych,
+* aktualnej godzinie,
+* najtańszych okresach,
+* najdroższych okresach,
+* potencjalnie korzystnych godzinach wykorzystania energii z PV.
 
-Aplikacja w pełni obsługuje **tryb jasny (Light Mode)** oraz **tryb ciemny (Dark Mode)**, automatycznie synchronizując się z ustawieniami systemowymi urządzenia.
+Dzięki temu użytkownik może łatwiej zdecydować, kiedy uruchomić energochłonne urządzenia.
 
 ---
 
-## 📂 Architektura projektu / Architecture
+### Urządzenia i przesuwanie zużycia
+
+Moduł urządzeń pozwala analizować pracę energochłonnych urządzeń domowych.
+
+Obsługiwane są m.in.:
+
+* zmywarka,
+* pralka,
+* suszarka,
+* piekarnik,
+* ładowanie samochodu elektrycznego.
+
+Dostępny jest również **symulator przesunięcia obciążenia**.
+
+Użytkownik może wybrać:
+
+1. urządzenie,
+2. liczbę cykli tygodniowo,
+3. aktualną godzinę pracy,
+4. docelową godzinę pracy.
+
+Aplikacja oblicza następnie potencjalną oszczędność:
+
+* na pojedynczym cyklu,
+* miesięcznie,
+* rocznie.
+
+Dostępny jest również dziennik elastycznych zdarzeń urządzeń.
+
+---
+
+### Fotowoltaika i magazyn energii
+
+Moduł PV pozwala sprawdzić, jak zmiana wielkości instalacji fotowoltaicznej wpływa na bilans energetyczny domu.
+
+Obsługiwany zakres mocy instalacji:
+
+```text
+2–10 kWp
+```
+
+Aplikacja prezentuje m.in.:
+
+* produkcję energii,
+* autokonsumpcję,
+* eksport energii do sieci,
+* roczne oszczędności,
+* przewidywany okres zwrotu inwestycji,
+* porównanie wariantów instalacji.
+
+Możliwe jest porównanie:
+
+**Wariant A**
+
+```text
+PV
+ ↓
+Dom
+ ↓
+Sieć
+```
+
+z
+
+**Wariantem B**
+
+```text
+PV
+ ↓
+Magazyn energii
+ ↓
+Dom
+ ↓
+Sieć
+```
+
+---
+
+### Analityka i prognozy
+
+Moduł analityczny prezentuje prognozowane zużycie energii.
+
+Dostępne są trzy horyzonty:
+
+| Horyzont | Okres   |
+| -------: | ------- |
+|    `24h` | 1 dzień |
+|    `72h` | 3 dni   |
+|   `168h` | 7 dni   |
+
+Aplikacja prezentuje:
+
+* wykres prognozowanego zużycia,
+* przewidywane szczyty zapotrzebowania,
+* możliwe przyczyny wzrostu zużycia,
+* MAE,
+* MAPE,
+* podział zużycia na kategorie.
+
+Kategorie obejmują m.in.:
+
+* ogrzewanie,
+* duże AGD,
+* oświetlenie,
+* elektronikę,
+* ładowanie EV,
+* pozostałe zużycie.
+
+---
+
+### Status połączenia z API
+
+W aplikacji znajduje się stały wskaźnik połączenia z backendem.
+
+Pokazuje on:
+
+* czy API jest dostępne,
+* aktualne opóźnienie odpowiedzi,
+* konfigurację adresu serwera,
+* zamaskowany token autoryzacyjny.
+
+Ułatwia to diagnozowanie problemów z połączeniem podczas pracy developerskiej.
+
+---
+
+# Stack technologiczny
+
+| Technologia                 | Wersja / zastosowanie     |
+| --------------------------- | ------------------------- |
+| **React Native**            | `0.86.3`                  |
+| **Expo**                    | `57.0.x`                  |
+| **React**                   | `19.2.3`                  |
+| **TypeScript**              | `6.0.x`                   |
+| **Expo Router**             | routing aplikacji         |
+| **NativeWind**              | stylowanie / Tailwind CSS |
+| **Tailwind CSS**            | `3.4.x`                   |
+| **React Native Reanimated** | animacje                  |
+| **React Native Web**        | wersja webowa             |
+| **ESLint**                  | analiza kodu              |
+
+Wersje wynikają bezpośrednio z aktualnego `package.json`.
+
+---
+
+# Struktura projektu
 
 ```text
 HackoWattMobileApp/
-├── assets/                     # Ikony, splash screen, obrazy statyczne
+│
+├── assets/
+│   └── images/
+│       ├── icon.png
+│       ├── splash-icon.png
+│       ├── favicon.png
+│       └── ...
+│
 ├── src/
+│   │
 │   ├── api/
-│   │   ├── client.ts           # Klient HTTP z obsługą autoryzacji Bearer token i timeoutów
-│   │   └── endpoints.ts        # Ścisłe, silnie typowane wiązania dla 12 endpointów API
-│   ├── app/                    # Ekrany oparte na Expo Router (File-based Routing)
-│   │   ├── _layout.tsx         # Główny kontener nawigacji i konfiguracja zakładek
-│   │   ├── index.tsx           # Pulpit Główny (Dashboard)
-│   │   ├── schedule.tsx        # Inteligentny Harmonogram (Smart Schedule)
-│   │   ├── devices.tsx         # Urządzenia i Przesunięcie Pracy (Devices & Load Shift)
-│   │   ├── solar.tsx           # Fotowoltaika i Magazyn Energii (PV & Battery)
-│   │   └── analytics.tsx       # Analityka i Prognozy AI (Analytics & AI Forecast)
-│   ├── components/             # Reużywalne komponenty UI
-│   │   ├── app-tabs.tsx        # Dolny pasek nawigacji dla platform natywnych (iOS / Android)
-│   │   ├── app-tabs.web.tsx    # Responsywny górny pasek nawigacji dla przeglądarek (Web)
+│   │   ├── client.ts
+│   │   └── endpoints.ts
+│   │
+│   ├── app/
+│   │   ├── _layout.tsx
+│   │   ├── index.tsx
+│   │   ├── schedule.tsx
+│   │   ├── devices.tsx
+│   │   ├── solar.tsx
+│   │   └── analytics.tsx
+│   │
+│   ├── components/
+│   │   ├── app-tabs.tsx
+│   │   ├── app-tabs.web.tsx
 │   │   └── ui/
-│   │       ├── ApiStatusIndicator.tsx # Diagnostyka połączenia i modal konfiguracji API
-│   │       ├── Card.tsx               # Spójny kontener kart z obsługą motywów
-│   │       ├── ErrorStateCard.tsx     # Komponent obsługi błędów sieciowych z przyciskiem ponowienia
-│   │       ├── MetricTile.tsx         # Kafelki wskaźników liczbowych odporne na błędy renderowania
-│   │       ├── SegmentedControl.tsx   # Przełączniki zakładek i horyzontów czasowych
-│   │       └── StatusBadge.tsx        # Plakietki statusów i ocen taryfowych
+│   │       ├── ApiStatusIndicator.tsx
+│   │       ├── Card.tsx
+│   │       ├── ErrorStateCard.tsx
+│   │       ├── MetricTile.tsx
+│   │       ├── SegmentedControl.tsx
+│   │       └── StatusBadge.tsx
+│   │
 │   ├── config/
-│   │   └── env.ts              # Dynamiczny menedżer konfiguracji i adresacji (np. Android 10.0.2.2)
+│   │   └── env.ts
+│   │
 │   ├── constants/
-│   │   └── theme.ts            # Tokeny stylistyczne, paleta barw i motywy Light/Dark
+│   │   └── theme.ts
+│   │
 │   ├── hooks/
-│   │   ├── useApi.ts           # Generyczny hook pobierania danych z obsługą cache i odświeżania
-│   │   ├── use-color-scheme.ts # Detekcja motywu systemowego
-│   │   └── use-theme.ts        # Dostęp do aktywnych tokenów kolorystycznych
+│   │   ├── useApi.ts
+│   │   ├── use-color-scheme.ts
+│   │   └── use-theme.ts
+│   │
 │   └── types/
-│       └── api.ts              # Kompletne definicje typów TypeScript dla wszystkich modeli danych
-├── .env                        # Konfiguracja zmiennych środowiskowych
-├── app.json                    # Konfiguracja Expo i Continuous Native Generation (CNG)
-├── package.json                # Zależności i skrypty npm
-├── tailwind.config.js          # Konfiguracja Tailwind CSS / NativeWind
-└── tsconfig.json               # Konfiguracja kompilatora TypeScript
+│       └── api.ts
+│
+├── app.json
+├── package.json
+├── tailwind.config.js
+├── tsconfig.json
+└── README.md
+```
+
+Projekt korzysta z **file-based routing** Expo Routera — pliki znajdujące się w `src/app/` odpowiadają poszczególnym ekranom aplikacji.
+
+---
+
+# Integracja z backendem
+
+Aplikacja komunikuje się z backendem **HackoWatt Django API** poprzez REST API.
+
+Autoryzacja odbywa się za pomocą:
+
+```http
+Authorization: Bearer <TOKEN>
+```
+
+## Endpointy
+
+| Endpoint                                | Zastosowanie                      |
+| --------------------------------------- | --------------------------------- |
+| `GET /api/v1/dashboard/summary/`        | dane głównego dashboardu          |
+| `GET /api/v1/smart-schedule/today/`     | harmonogram i taryfy              |
+| `GET /api/v1/devices/guidance/`         | informacje o urządzeniach         |
+| `GET /api/v1/devices/shift-simulation/` | symulacja przesunięcia obciążenia |
+| `GET /api/v1/devices/flexible-events/`  | historia cykli urządzeń           |
+| `GET /api/v1/pv/simulate/`              | symulacja PV i magazynu           |
+| `GET /api/v1/pv/variants/`              | warianty instalacji PV            |
+| `GET /api/v1/consumption/forecast/`     | prognoza zużycia                  |
+| `GET /api/v1/consumption/history/`      | historia zużycia                  |
+| `GET /api/v1/tariffs/`                  | informacje o taryfach             |
+| `GET /api/v1/system/assumptions/`       | założenia modelu                  |
+| `GET /api/v1/system/metrics/`           | metryki modelu ML                 |
+
+Klient API i typy odpowiedzi są zorganizowane w:
+
+```text
+src/api/
+src/types/
 ```
 
 ---
 
-## 🔗 Integracja z Backendem API / Backend API
+# Konfiguracja
 
-Aplikacja łączy się bezpośrednio z 12 endpointami REST API wystawianymi przez backend Django. Wszystkie zapytania są uwierzytelniane nagłówkiem `Authorization: Bearer <TOKEN>`.
+## Wymagania
 
-| Lp. | Metoda | Ścieżka endpointu | Opis |
-| :---: | :---: | :--- | :--- |
-| **1** | `GET` | `/api/v1/dashboard/summary/` | Bieżąca stawka, ostatni odczyt, sumy 24h, dominująca kategoria, alert szczytu |
-| **2** | `GET` | `/api/v1/smart-schedule/today/` | 24-godzinny harmonogram doby, podział na strefy cenowe, porady generacji PV |
-| **3** | `GET` | `/api/v1/devices/guidance/` | Zestawienie urządzeń elastycznych (moc, cykl, najlepsze godziny pracy) |
-| **4** | `GET` | `/api/v1/devices/shift-simulation/` | Symulacja przesunięcia pracy urządzenia (parametry: device, godziny, cykle) |
-| **5** | `GET` | `/api/v1/devices/flexible-events/` | Dziennik i historia cykli pracy elastycznych urządzeń AGD |
-| **6** | `GET` | `/api/v1/pv/simulate/` | Symulacja PV i magazynu energii (Wariant A vs Wariant B, autokonsumpcja, ROI) |
-| **7** | `GET` | `/api/v1/pv/variants/` | Tabela mocy instalacji PV w zakresie 2–10 kWp |
-| **8** | `GET` | `/api/v1/consumption/forecast/` | Prognoza poboru mocy na horyzont 24h, 72h lub 168h z wyjaśnieniem szczytów |
-| **9** | `GET` | `/api/v1/consumption/history/` | Historia zużycia energii z podziałem na kategorie |
-| **10** | `GET` | `/api/v1/tariffs/` | Informacje o taryfach, przedziałach doliny i szczytu |
-| **11** | `GET` | `/api/v1/system/assumptions/` | Parametry techniczne budynku, urządzeń i taryf |
-| **12** | `GET` | `/api/v1/system/metrics/` | Metryki dokładności modelu ML (MAE, MAPE) |
+Przed rozpoczęciem pracy z projektem należy mieć zainstalowane:
 
-> [!NOTE]
-> Klient API automatycznie tłumaczy adres `localhost` / `127.0.0.1` na `10.0.2.2`, gdy aplikacja jest uruchamiana wewnątrz oficjalnego emulatora Android Studio.
+* **Node.js 18+**
+* **npm / Yarn / Bun**
+* **Expo CLI** uruchamiane przez `npx`
+
+Repozytorium używa również Yarn 1.22.22 jako deklarowanego package managera.
 
 ---
 
-## ⚙️ Wymagania i Konfiguracja / Configuration
+## Zmienne środowiskowe
 
-### Wymagania wstępne:
-- **Node.js**: wersja `>= 18.x` (zalecana wersja LTS)
-- **Menedżer pakietów**: `npm`, `yarn` lub `bun`
-- **Expo CLI**: dostarczany lokalnie przez `npx expo`
+Utwórz w katalogu głównym plik:
 
-### Konfiguracja środowiska (`.env`):
-Utwórz lub zmodyfikuj plik `.env` w głównym katalogu projektu:
+```text
+.env
+```
+
+Przykładowa konfiguracja:
 
 ```env
-# Adres bazowy serwera API (dla Web/iOS: localhost:8000, dla fizycznych urządzeń: IP komputera w LAN)
 EXPO_PUBLIC_API_URL=http://localhost:8000
-
-# Klucz dostępowy Bearer Token do autoryzacji zapytań
-EXPO_PUBLIC_API_TOKEN=hackowatt-demo-mobile-key-2026
+EXPO_PUBLIC_API_TOKEN=your-api-token
 ```
+
+### `EXPO_PUBLIC_API_URL`
+
+Adres backendu HackoWatt.
+
+Przykłady:
+
+**Web / iOS Simulator:**
+
+```env
+EXPO_PUBLIC_API_URL=http://localhost:8000
+```
+
+**Urządzenie w tej samej sieci Wi-Fi:**
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.1.100:8000
+```
+
+**Android Emulator:**
+
+```env
+EXPO_PUBLIC_API_URL=http://10.0.2.2:8000
+```
+
+Aplikacja posiada mechanizm automatycznej zamiany `localhost` / `127.0.0.1` na `10.0.2.2` w środowisku Android Emulator.
+
+### `EXPO_PUBLIC_API_TOKEN`
+
+Token wymagany przez backend:
+
+```env
+EXPO_PUBLIC_API_TOKEN=your-api-token
+```
+
+> Nie commituj prawdziwych tokenów ani sekretów do repozytorium.
+
+Plik `.env` jest już uwzględniony w `.gitignore`.
 
 ---
 
-## 🚀 Instalacja i Uruchomienie / Getting Started
+# Uruchomienie
 
-### 1. Klonowanie repozytorium i instalacja zależności
+## 1. Sklonuj repozytorium
+
 ```bash
 git clone https://github.com/allt3rr/HackoWattMobileApp.git
 cd HackoWattMobileApp
+```
+
+---
+
+## 2. Zainstaluj zależności
+
+```bash
 npm install
 ```
 
-### 2. Uruchomienie aplikacji w wybranym środowisku
+lub:
 
-- **Przeglądarka internetowa (Web)**:
-  ```bash
-  npm run web
-  # lub: npx expo start --web
-  ```
-
-- **Serwer deweloperski ogólny (Android / iOS / Expo Go)**:
-  ```bash
-  npx expo start
-  ```
-  Zeskanuj wyświetlony kod QR za pomocą aplikacji **Expo Go** (Android) lub wbudowanego aparatu (iOS).
-
-- **Emulator Android**:
-  ```bash
-  npm run android
-  ```
-
-- **Symulator iOS** (wymagany macOS):
-  ```bash
-  npm run ios
-  ```
+```bash
+yarn install
+```
 
 ---
 
-## 🛡️ Weryfikacja jakości kodu / Quality Assurance
+## 3. Skonfiguruj `.env`
 
-Przed każdym wdrożeniem lub utworzeniem Pull Requestu, upewnij się, że kod spełnia wszystkie rygorystyczne standardy:
-
-1. **Weryfikacja typów TypeScript**:
-   ```bash
-   npx tsc --noEmit
-   ```
-2. **Statyczna analiza kodu (ESLint)**:
-   ```bash
-   npx expo lint
-   ```
-3. **Kompilacja produkcyjna (Web Export)**:
-   ```bash
-   npx expo export --platform web
-   ```
-4. **Diagnostyka środowiska Expo**:
-   ```bash
-   npx expo-doctor
-   ```
+```env
+EXPO_PUBLIC_API_URL=http://localhost:8000
+EXPO_PUBLIC_API_TOKEN=your-api-token
+```
 
 ---
 
-## 📄 Licencja / License
+## 4. Uruchom Expo
 
-Projekt jest udostępniany na warunkach licencji [MIT](LICENSE). Szczegóły znajdują się w pliku licencji.
+```bash
+npm start
+```
+
+lub:
+
+```bash
+npx expo start
+```
+
+---
+
+# Uruchomienie na Androidzie
+
+Jeżeli masz uruchomiony emulator Android:
+
+```bash
+npm run android
+```
+
+lub:
+
+```bash
+npx expo start --android
+```
+
+Backend powinien być dostępny dla emulatora.
+
+Jeżeli backend działa na komputerze pod:
+
+```text
+http://localhost:8000
+```
+
+Android Emulator powinien korzystać z:
+
+```text
+http://10.0.2.2:8000
+```
+
+---
+
+# 🍎 Uruchomienie na iOS
+
+Na macOS z zainstalowanym Xcode:
+
+```bash
+npm run ios
+```
+
+lub:
+
+```bash
+npx expo start --ios
+```
+
+---
+
+# Uruchomienie wersji webowej
+
+```bash
+npm run web
+```
+
+lub:
+
+```bash
+npx expo start --web
+```
+
+Wersja webowa jest skonfigurowana jako statyczny output Expo.
+
+---
+
+# Expo Go
+
+W trybie developerskim można uruchomić projekt poprzez:
+
+```bash
+npx expo start
+```
+
+i następnie otworzyć aplikację:
+
+* przez kod QR na Androidzie,
+* przez aparat / Expo Go na iOS,
+* poprzez emulator Android,
+* poprzez iOS Simulator.
+
+---
+
+# Nawigacja
+
+Aplikacja wykorzystuje **Expo Router**.
+
+Główne trasy:
+
+```text
+/
+├── /schedule
+├── /devices
+├── /solar
+└── /analytics
+```
+
+Na urządzeniach mobilnych nawigacja jest prezentowana jako dolny pasek, natomiast na większych ekranach i w wersji webowej wykorzystuje responsywny pasek zakładek.
+
+---
+
+# Komponenty UI
+
+Wspólne elementy interfejsu znajdują się w:
+
+```text
+src/components/ui/
+```
+
+### `Card`
+
+Podstawowy kontener treści.
+
+### `MetricTile`
+
+Kafelek prezentujący wartość liczbową.
+
+### `StatusBadge`
+
+Wizualne oznaczenie statusu lub strefy taryfowej.
+
+### `SegmentedControl`
+
+Przełącznik pomiędzy wariantami / horyzontami czasowymi.
+
+### `ErrorStateCard`
+
+Jednolity sposób prezentowania błędów API wraz z możliwością ponowienia zapytania.
+
+### `ApiStatusIndicator`
+
+Wskaźnik stanu połączenia z backendem oraz narzędzie diagnostyczne.
+
+---
+
+# Pobieranie danych
+
+Za komunikację z backendem odpowiada:
+
+```text
+src/api/client.ts
+```
+
+Natomiast endpointy są zdefiniowane w:
+
+```text
+src/api/endpoints.ts
+```
+
+Warstwa hooków udostępnia:
+
+```text
+src/hooks/useApi.ts
+```
+
+Dzięki temu ekrany nie muszą bezpośrednio implementować logiki komunikacji HTTP.
+
+Typy odpowiedzi API znajdują się w:
+
+```text
+src/types/api.ts
+```
+
+Repozytorium korzysta z TypeScript w trybie **strict**.
+
+---
+
+# Kontrola jakości
+
+Przed utworzeniem Pull Requesta zaleca się uruchomienie wszystkich kontroli.
+
+## TypeScript
+
+```bash
+npx tsc --noEmit
+```
+
+## ESLint
+
+```bash
+npm run lint
+```
+
+lub:
+
+```bash
+npx expo lint
+```
+
+## Diagnostyka Expo
+
+```bash
+npx expo-doctor
+```
+
+## Sprawdzenie buildu webowego
+
+```bash
+npx expo export --platform web
+```
+
+Te kroki pozwalają wykryć błędy typów, problemy z lintingiem oraz problemy konfiguracyjne Expo.
+
+---
+
+# Przydatne komendy
+
+| Komenda                          | Działanie               |
+| -------------------------------- | ----------------------- |
+| `npm start`                      | uruchamia Expo          |
+| `npm run android`                | uruchamia Android       |
+| `npm run ios`                    | uruchamia iOS           |
+| `npm run web`                    | uruchamia wersję webową |
+| `npm run lint`                   | uruchamia ESLint        |
+| `npx tsc --noEmit`               | sprawdza typy           |
+| `npx expo-doctor`                | diagnostyka Expo        |
+| `npx expo export --platform web` | buduje wersję web       |
+
+Skrypty są zdefiniowane w `package.json`.
+
+---
+
+# Bezpieczeństwo
+
+Nie przechowuj w repozytorium:
+
+```text
+.env
+API keys
+Bearer tokens
+certificates
+private keys
+```
+
+Projekt ma już konfigurację `.gitignore`, która ignoruje m.in.:
+
+```text
+.env
+.env*.local
+*.jks
+*.p8
+*.p12
+*.key
+*.pem
+```
+
+---
+
+# Architektura????
+
+Uproszczony przepływ danych:
+
+```text
+┌──────────────────────────┐
+│      HackoWatt Mobile    │
+│     React Native / Expo  │
+└────────────┬─────────────┘
+             │
+             │ REST / JSON
+             │ Bearer Token
+             ▼
+┌──────────────────────────┐
+│       Django API         │
+│       HackoWatt          │
+└────────────┬─────────────┘
+             │
+             ├── Zużycie energii
+             ├── Prognozy ML
+             ├── Taryfy
+             ├── Urządzenia
+             ├── PV
+             └── Magazyn energii
+```
+
+Aplikacja mobilna jest więc przede wszystkim **warstwą prezentacji i interakcji użytkownika**, natomiast obliczenia i dane pochodzą z backendu HackoWatt.
+
+---
+
+# Powiązany projekt
+
+Backend:
+
+**HackoWatt/Eko-dziki Django API**
+
+```text
+https://github.com/kleszczuch/HackoWatt
+```
+
+Mobile:
+
+```text
+https://github.com/allt3rr/HackoWattMobileApp
+```
+
+Oba repozytoria stanowią części jednego projektu.
+
+---
+
+# Aktualny zakres aplikacji?????
+
+HackoWatt Mobile koncentruje się na czterech głównych obszarach:
+
+```text
+       ⚡ HACKOWATT
+            │
+    ┌───────┼────────┐
+    │       │        │
+    ▼       ▼        ▼
+  📊      💰       ☀️
+Analityka Koszty    PV
+    │       │        │
+    └───────┼────────┘
+            ▼
+       🔌 Urządzenia
+            │
+            ▼
+      Optymalizacja
+       zużycia energii
+```
+
+Celem aplikacji jest umożliwienie użytkownikowi podejmowania decyzji dotyczących zużycia energii na podstawie aktualnych danych, prognoz oraz symulacji różnych scenariuszy.
+
+---
+
+# Licencja
+
+Projekt jest udostępniany na licencji **MIT**.
+
+Szczegóły znajdują się w pliku:
+
+```text
+LICENSE
+```
+
+---
+
+## Projekt
+
+**Eko-dziki Mobile**
+Mobile & Web Energy Management Application
+
+Autorzy:
+
+**Adam Nowak,?**
+
+Built with ❤️ using: ???
+
+**React Native · Expo · TypeScript · NativeWind**
