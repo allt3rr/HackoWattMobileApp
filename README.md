@@ -1,6 +1,6 @@
-# HackoWatt Mobile
+# Eko-dziki Mobile
 
-> Mobilna aplikacja do monitorowania i optymalizacji zużycia energii, analizy taryf, zarządzania elastycznymi urządzeniami oraz symulacji instalacji fotowoltaicznej i magazynu energii.
+ Mobilna aplikacja do monitorowania i optymalizacji zużycia energii, analizy taryf, zarządzania elastycznymi urządzeniami oraz symulacji instalacji fotowoltaicznej i magazynu energii.
 
 **HackoWatt Mobile** jest frontendem mobilnym projektu HackoWatt. Aplikacja komunikuje się z backendem Django poprzez REST API i prezentuje użytkownikowi dane dotyczące zużycia energii, kosztów, prognoz, urządzeń oraz instalacji PV.
 
@@ -192,7 +192,7 @@ Wersje wynikają bezpośrednio z aktualnego `package.json`.
 ---
 
 # Struktura projektu
-
+?????
 ```text
 HackoWattMobileApp/
 │
@@ -436,7 +436,7 @@ http://10.0.2.2:8000
 
 ---
 
-# 🍎 Uruchomienie na iOS
+# Uruchomienie na iOS
 
 Na macOS z zainstalowanym Xcode:
 
