@@ -1,115 +1,209 @@
-import {
-  Tabs,
-  TabList,
-  TabTrigger,
-  TabSlot,
-  TabTriggerSlotProps,
-  TabListProps,
-} from 'expo-router/ui';
-import { SymbolView } from 'expo-symbols';
-import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
+import { Palette } from '@/constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { router, Slot, usePathname } from 'expo-router';
+import { Platform, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
-import { ExternalLink } from './external-link';
-import { ThemedText } from './themed-text';
-import { ThemedView } from './themed-view';
+interface TabItem {
+  name: string;
+  href: '/' | '/schedule' | '/devices' | '/analytics' | '/solar';
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}
 
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+const TABS: TabItem[] = [
+  { name: 'index', href: '/', label: 'Pulpit', icon: 'flash' },
+  { name: 'schedule', href: '/schedule', label: 'Harmonogram', icon: 'time' },
+  { name: 'devices', href: '/devices', label: 'Urządzenia', icon: 'calculator' },
+  { name: 'analytics', href: '/analytics', label: 'Analiza', icon: 'bar-chart' },
+  { name: 'solar', href: '/solar', label: 'Fotowoltaika', icon: 'sunny' },
+];
 
 export default function AppTabs() {
-  return (
-    <Tabs>
-      <TabSlot style={{ height: '100%' }} />
-      <TabList asChild>
-        <CustomTabList>
-          <TabTrigger name="home" href="/" asChild>
-            <TabButton>Home</TabButton>
-          </TabTrigger>
-          <TabTrigger name="explore" href="/explore" asChild>
-            <TabButton>Explore</TabButton>
-          </TabTrigger>
-        </CustomTabList>
-      </TabList>
-    </Tabs>
-  );
-}
-
-export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
-  return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
-      <ThemedView
-        type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.tabButtonView}>
-        <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
-          {children}
-        </ThemedText>
-      </ThemedView>
-    </Pressable>
-  );
-}
-
-export function CustomTabList(props: TabListProps) {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+  const pathname = usePathname();
+  const isDark = useColorScheme() === 'dark';
 
   return (
-    <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
-        <ThemedText type="smallBold" style={styles.brandText}>
-          Expo Starter
-        </ThemedText>
-
-        {props.children}
-
-        <ExternalLink href="https://docs.expo.dev" asChild>
-          <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs</ThemedText>
-            <SymbolView
-              tintColor={colors.text}
-              name={{ ios: 'arrow.up.right.square', web: 'link' }}
-              size={12}
-            />
+    <View style={styles.outerContainer}>
+      {/* Top Navigation Bar on Web */}
+      <View
+        style={[
+          styles.navBar,
+          {
+            backgroundColor: isDark ? '#181A1D' : '#FFFFFF',
+            borderBottomColor: isDark ? '#2E333A' : '#E2E8F0',
+            ...Platform.select({
+              web: {
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+              },
+            }),
+          },
+        ]}>
+        <View style={styles.navContent}>
+          {/* Brand Logo & Name */}
+          <Pressable onPress={() => router.push('/')} style={styles.brandGroup}>
+            <View style={styles.logoBadge}>
+              <Ionicons name="flash" size={16} color="#0F172A" />
+            </View>
+            <View>
+              <Text style={[styles.brandTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                HackoWatt
+              </Text>
+              <Text style={[styles.brandSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                Smart Energy
+              </Text>
+            </View>
           </Pressable>
-        </ExternalLink>
-      </ThemedView>
+
+          {/* Tab Navigation Links */}
+          <View style={styles.tabsRow}>
+            {TABS.map((tab) => {
+              const isFocused =
+                tab.href === '/'
+                  ? pathname === '/' || pathname === ''
+                  : pathname === tab.href || pathname?.startsWith(`${tab.href}/`);
+
+              return (
+                <Pressable
+                  key={tab.name}
+                  onPress={() => {
+                    if (!isFocused) {
+                      router.push(tab.href);
+                    }
+                  }}
+                  style={({ pressed }) => [
+                    styles.tabButton,
+                    isFocused
+                      ? isDark
+                        ? styles.tabActiveDark
+                        : styles.tabActiveLight
+                      : styles.tabInactive,
+                    pressed && { opacity: 0.8 },
+                  ]}>
+                  <Ionicons
+                    name={tab.icon}
+                    size={15}
+                    color={
+                      isFocused
+                        ? isDark
+                          ? Palette.chartreuse
+                          : '#0F172A'
+                        : isDark
+                        ? '#9AA4AF'
+                        : Palette.slateGrey
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.tabLabel,
+                      {
+                        color: isFocused
+                          ? isDark
+                            ? Palette.chartreuse
+                            : '#0F172A'
+                          : isDark
+                          ? '#9AA4AF'
+                          : Palette.slateGrey,
+                        fontWeight: isFocused ? '800' : '600',
+                      },
+                    ]}>
+                    {tab.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      </View>
+
+      {/* Screen Slot Content */}
+      <View style={styles.screenContainer}>
+        <Slot />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  tabListContainer: {
-    position: 'absolute',
+  outerContainer: {
+    flex: 1,
     width: '100%',
-    padding: Spacing.three,
+    height: '100%',
+  },
+  navBar: {
+    width: '100%',
+    borderBottomWidth: 1,
+    zIndex: 100,
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  navContent: {
+    width: '100%',
+    maxWidth: 1000,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  brandGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    cursor: 'pointer',
+  },
+  logoBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: Palette.radioactiveGrass,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
+  },
+  brandTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    letterSpacing: -0.3,
+  },
+  brandSubtitle: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  tabsRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
   },
-  innerContainer: {
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.five,
-    borderRadius: Spacing.five,
+  tabButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexGrow: 1,
-    gap: Spacing.two,
-    maxWidth: MaxContentWidth,
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    cursor: 'pointer',
   },
-  brandText: {
-    marginRight: 'auto',
+  tabActiveLight: {
+    backgroundColor: Palette.chartreuse,
+    borderWidth: 1,
+    borderColor: Palette.radioactiveGrass,
   },
-  pressed: {
-    opacity: 0.7,
+  tabActiveDark: {
+    backgroundColor: 'rgba(132, 221, 99, 0.16)',
+    borderWidth: 1,
+    borderColor: Palette.radioactiveGrass,
   },
-  tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three,
+  tabInactive: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
-  externalPressable: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.one,
-    marginLeft: Spacing.three,
+  tabLabel: {
+    fontSize: 13,
+  },
+  screenContainer: {
+    flex: 1,
+    width: '100%',
   },
 });

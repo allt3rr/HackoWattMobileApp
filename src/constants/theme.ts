@@ -1,26 +1,61 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * HackoWatt Design System & Color Tokens
+ * Based on the custom brand palette:
+ * - Charcoal: #545454
+ * - Slate Grey: #69747C
+ * - Sage Green: #6BAA75
+ * - Radioactive Grass: #84DD63
+ * - Chartreuse: #CBFF4D
  */
 
 import '@/global.css';
 
 import { Platform } from 'react-native';
 
+export const Palette = {
+  charcoal: '#545454',
+  slateGrey: '#69747C',
+  sageGreen: '#6BAA75',
+  radioactiveGrass: '#84DD63',
+  chartreuse: '#CBFF4D',
+
+  // Semantic status colors
+  zoneGreen: '#84DD63',
+  zoneYellow: '#EAB308',
+  zoneRed: '#EF4444',
+  electricAccent: '#CBFF4D',
+} as const;
+
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: '#1C2024',
+    textSecondary: '#69747C',
+    textMuted: '#8E98A2',
+    background: '#F6F8F6',
+    card: '#FFFFFF',
+    backgroundElement: '#EDF1EE',
+    backgroundSelected: '#E2F3DC',
+    border: '#E0E5E2',
+    primary: '#6BAA75',
+    accent: '#84DD63',
+    highlight: '#CBFF4D',
+    charcoal: '#545454',
+    slate: '#69747C',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    text: '#FFFFFF',
+    textSecondary: '#9AA4AF',
+    textMuted: '#69747C',
+    background: '#16181A',
+    card: '#22252A',
+    backgroundElement: '#2B3037',
+    backgroundSelected: '#333A42',
+    border: '#383E46',
+    primary: '#84DD63',
+    accent: '#CBFF4D',
+    highlight: '#CBFF4D',
+    charcoal: '#545454',
+    slate: '#69747C',
   },
 } as const;
 
@@ -28,13 +63,9 @@ export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {
@@ -62,4 +93,4 @@ export const Spacing = {
 } as const;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+export const MaxContentWidth = 840;

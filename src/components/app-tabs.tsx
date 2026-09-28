@@ -13,17 +13,46 @@ export default function AppTabs() {
       indicatorColor={colors.backgroundElement}
       labelStyle={{ selected: { color: colors.text } }}>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Pulpit</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
+          sf="bolt.fill"
           src={require('@/assets/images/tabIcons/home.png')}
           renderingMode="template"
         />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="schedule">
+        <NativeTabs.Trigger.Label>Harmonogram</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
+          sf="clock.badge.checkmark.fill"
           src={require('@/assets/images/tabIcons/explore.png')}
+          renderingMode="template"
+        />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="devices">
+        <NativeTabs.Trigger.Label>Urządzenia</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf="washer.fill"
+          src={require('@/assets/images/tabIcons/home.png')}
+          renderingMode="template"
+        />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="analytics">
+        <NativeTabs.Trigger.Label>Analiza</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf="chart.xyaxis.line"
+          src={require('@/assets/images/tabIcons/explore.png')}
+          renderingMode="template"
+        />
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="solar">
+        <NativeTabs.Trigger.Label>Fotowoltaika</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf="sun.max.fill"
+          src={require('@/assets/images/tabIcons/home.png')}
           renderingMode="template"
         />
       </NativeTabs.Trigger>
