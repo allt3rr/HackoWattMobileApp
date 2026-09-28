@@ -8,6 +8,7 @@ Aplikacja jest przygotowana jako **Universal App** i może działać na:
 
 *  Android
 *  Web
+* iOS
 
 Projekt wykorzystuje **React Native + Expo + TypeScript**.
 
@@ -191,68 +192,6 @@ Wersje wynikają bezpośrednio z aktualnego `package.json`.
 
 ---
 
-# Struktura projektu
-?????
-```text
-HackoWattMobileApp/
-│
-├── assets/
-│   └── images/
-│       ├── icon.png
-│       ├── splash-icon.png
-│       ├── favicon.png
-│       └── ...
-│
-├── src/
-│   │
-│   ├── api/
-│   │   ├── client.ts
-│   │   └── endpoints.ts
-│   │
-│   ├── app/
-│   │   ├── _layout.tsx
-│   │   ├── index.tsx
-│   │   ├── schedule.tsx
-│   │   ├── devices.tsx
-│   │   ├── solar.tsx
-│   │   └── analytics.tsx
-│   │
-│   ├── components/
-│   │   ├── app-tabs.tsx
-│   │   ├── app-tabs.web.tsx
-│   │   └── ui/
-│   │       ├── ApiStatusIndicator.tsx
-│   │       ├── Card.tsx
-│   │       ├── ErrorStateCard.tsx
-│   │       ├── MetricTile.tsx
-│   │       ├── SegmentedControl.tsx
-│   │       └── StatusBadge.tsx
-│   │
-│   ├── config/
-│   │   └── env.ts
-│   │
-│   ├── constants/
-│   │   └── theme.ts
-│   │
-│   ├── hooks/
-│   │   ├── useApi.ts
-│   │   ├── use-color-scheme.ts
-│   │   └── use-theme.ts
-│   │
-│   └── types/
-│       └── api.ts
-│
-├── app.json
-├── package.json
-├── tailwind.config.js
-├── tsconfig.json
-└── README.md
-```
-
-Projekt korzysta z **file-based routing** Expo Routera — pliki znajdujące się w `src/app/` odpowiadają poszczególnym ekranom aplikacji.
-
----
-
 # Integracja z backendem
 
 Aplikacja komunikuje się z backendem **HackoWatt Django API** poprzez REST API.
@@ -262,31 +201,6 @@ Autoryzacja odbywa się za pomocą:
 ```http
 Authorization: Bearer <TOKEN>
 ```
-
-## Endpointy
-
-| Endpoint                                | Zastosowanie                      |
-| --------------------------------------- | --------------------------------- |
-| `GET /api/v1/dashboard/summary/`        | dane głównego dashboardu          |
-| `GET /api/v1/smart-schedule/today/`     | harmonogram i taryfy              |
-| `GET /api/v1/devices/guidance/`         | informacje o urządzeniach         |
-| `GET /api/v1/devices/shift-simulation/` | symulacja przesunięcia obciążenia |
-| `GET /api/v1/devices/flexible-events/`  | historia cykli urządzeń           |
-| `GET /api/v1/pv/simulate/`              | symulacja PV i magazynu           |
-| `GET /api/v1/pv/variants/`              | warianty instalacji PV            |
-| `GET /api/v1/consumption/forecast/`     | prognoza zużycia                  |
-| `GET /api/v1/consumption/history/`      | historia zużycia                  |
-| `GET /api/v1/tariffs/`                  | informacje o taryfach             |
-| `GET /api/v1/system/assumptions/`       | założenia modelu                  |
-| `GET /api/v1/system/metrics/`           | metryki modelu ML                 |
-
-Klient API i typy odpowiedzi są zorganizowane w:
-
-```text
-src/api/
-src/types/
-```
-
 ---
 
 # Konfiguracja
@@ -485,58 +399,6 @@ i następnie otworzyć aplikację:
 
 ---
 
-# Nawigacja
-
-Aplikacja wykorzystuje **Expo Router**.
-
-Główne trasy:
-
-```text
-/
-├── /schedule
-├── /devices
-├── /solar
-└── /analytics
-```
-
-Na urządzeniach mobilnych nawigacja jest prezentowana jako dolny pasek, natomiast na większych ekranach i w wersji webowej wykorzystuje responsywny pasek zakładek.
-
----
-
-# Komponenty UI
-
-Wspólne elementy interfejsu znajdują się w:
-
-```text
-src/components/ui/
-```
-
-### `Card`
-
-Podstawowy kontener treści.
-
-### `MetricTile`
-
-Kafelek prezentujący wartość liczbową.
-
-### `StatusBadge`
-
-Wizualne oznaczenie statusu lub strefy taryfowej.
-
-### `SegmentedControl`
-
-Przełącznik pomiędzy wariantami / horyzontami czasowymi.
-
-### `ErrorStateCard`
-
-Jednolity sposób prezentowania błędów API wraz z możliwością ponowienia zapytania.
-
-### `ApiStatusIndicator`
-
-Wskaźnik stanu połączenia z backendem oraz narzędzie diagnostyczne.
-
----
-
 # Pobieranie danych
 
 Za komunikację z backendem odpowiada:
@@ -650,36 +512,6 @@ Projekt ma już konfigurację `.gitignore`, która ignoruje m.in.:
 
 ---
 
-# Architektura????
-
-Uproszczony przepływ danych:
-
-```text
-┌──────────────────────────┐
-│      HackoWatt Mobile    │
-│     React Native / Expo  │
-└────────────┬─────────────┘
-             │
-             │ REST / JSON
-             │ Bearer Token
-             ▼
-┌──────────────────────────┐
-│       Django API         │
-│       HackoWatt          │
-└────────────┬─────────────┘
-             │
-             ├── Zużycie energii
-             ├── Prognozy ML
-             ├── Taryfy
-             ├── Urządzenia
-             ├── PV
-             └── Magazyn energii
-```
-
-Aplikacja mobilna jest więc przede wszystkim **warstwą prezentacji i interakcji użytkownika**, natomiast obliczenia i dane pochodzą z backendu HackoWatt.
-
----
-
 # Powiązany projekt
 
 Backend:
@@ -700,32 +532,6 @@ Oba repozytoria stanowią części jednego projektu.
 
 ---
 
-# Aktualny zakres aplikacji?????
-
-HackoWatt Mobile koncentruje się na czterech głównych obszarach:
-
-```text
-       ⚡ HACKOWATT
-            │
-    ┌───────┼────────┐
-    │       │        │
-    ▼       ▼        ▼
-  📊      💰       ☀️
-Analityka Koszty    PV
-    │       │        │
-    └───────┼────────┘
-            ▼
-       🔌 Urządzenia
-            │
-            ▼
-      Optymalizacja
-       zużycia energii
-```
-
-Celem aplikacji jest umożliwienie użytkownikowi podejmowania decyzji dotyczących zużycia energii na podstawie aktualnych danych, prognoz oraz symulacji różnych scenariuszy.
-
----
-
 # Licencja
 
 Projekt jest udostępniany na licencji **MIT**.
@@ -741,12 +547,9 @@ LICENSE
 ## Projekt
 
 **Eko-dziki Mobile**
-Mobile & Web Energy Management Application
+Mobilna i webowa aplikacja do zarządzania energią.
 
 Autorzy:
 
-**Adam Nowak,?**
+**Adam Nowak, Marek Kleszcz, Bartosz Wiecha, Władysław Kobierski, Michał Przybyła**
 
-Built with ❤️ using: ???
-
-**React Native · Expo · TypeScript · NativeWind**
