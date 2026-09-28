@@ -2,7 +2,7 @@
 
  Mobilna aplikacja do monitorowania i optymalizacji zużycia energii, analizy taryf, zarządzania elastycznymi urządzeniami oraz symulacji instalacji fotowoltaicznej i magazynu energii.
 
-**Eko-dziki Mobile** jest frontendem mobilnym projektu HackoWatt. Aplikacja komunikuje się z backendem Django poprzez REST API i prezentuje użytkownikowi dane dotyczące zużycia energii, kosztów, prognoz, urządzeń oraz instalacji PV.
+**Eko-dziki Mobile** jest frontendem mobilnym projektu Eko-dziki. Aplikacja komunikuje się z backendem Django poprzez REST API i prezentuje użytkownikowi dane dotyczące zużycia energii, kosztów, prognoz, urządzeń oraz instalacji PV.
 
 Aplikacja jest przygotowana jako **Universal App** i może działać na:
 
