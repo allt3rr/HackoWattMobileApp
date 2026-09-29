@@ -61,6 +61,7 @@ export function Card({
   if (onPress) {
     return (
       <Pressable
+        className={className}
         onPress={onPress}
         style={({ pressed }) => [
           cardStyle,
@@ -72,5 +73,9 @@ export function Card({
     );
   }
 
-  return <View style={[cardStyle, style]}>{children}</View>;
+  return (
+    <View className={className} style={[cardStyle, style]}>
+      {children}
+    </View>
+  );
 }

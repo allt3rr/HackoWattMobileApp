@@ -6,7 +6,6 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
-  StyleSheet,
   View,
 } from 'react-native';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -51,23 +50,21 @@ export default function DashboardScreen() {
   const dominant = lastReading?.dominant_category;
 
   const getPriceColor = (zone: ScheduleZone) => {
-    if (zone === 'green') return isDark ? Palette.chartreuse : Palette.radioactiveGrass;
+    if (zone === 'green') return isDark ? '#CBFF4D' : '#84DD63'; // Palette.chartreuse : Palette.radioactiveGrass
     if (zone === 'yellow') return '#EAB308';
     return '#EF4444';
   };
 
   return (
     <SafeAreaView
-      style={[
-        styles.safeArea,
-        { backgroundColor: isDark ? '#1A1C1E' : '#F7F6ED' },
-      ]}
+      className="flex-1 bg-[#F7F6ED] dark:bg-[#1A1C1E]"
       edges={['top']}>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: BottomTabInset + Spacing.six, maxWidth: MaxContentWidth },
-        ]}
+        contentContainerClassName="px-4 pt-2 self-center w-full gap-3.5"
+        contentContainerStyle={{
+          paddingBottom: BottomTabInset + Spacing.six,
+          maxWidth: MaxContentWidth,
+        }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -84,9 +81,9 @@ export default function DashboardScreen() {
         />
 
         {isLoading && !summary ? (
-          <View style={styles.loadingContainer}>
+          <View className="items-center justify-center min-h-[280px] gap-3">
             <ActivityIndicator size="large" color={Palette.radioactiveGrass} />
-            <AppText style={[styles.loadingText, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+            <AppText className="text-sm text-[#69747C] dark:text-[#9AA4AF]">
               Ładowanie danych z serwera backendu...
             </AppText>
           </View>
@@ -94,61 +91,38 @@ export default function DashboardScreen() {
           <>
             {/* Location Hero Header matching Web App */}
             {summary?.scenario ? (
-              <View style={styles.webHeaderSection}>
-                <AppText style={[styles.webEyebrow, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+              <View className="py-1.5 gap-1">
+                <AppText className="text-[11px] font-extrabold tracking-[1.2px] uppercase text-[#69747C] dark:text-[#9AA4AF]">
                   LOKALIZACJA · {summary.scenario.city?.toUpperCase()}
                 </AppText>
-                <AppText style={[styles.webTitle, { color: isDark ? '#EDEDED' : Palette.charcoal }]}>
-                  Energia w domu <AppText style={styles.webTitleHighlight}>{summary.scenario.city_short || summary.scenario.city?.split(',')[0]}</AppText>
+                <AppText className="text-[26px] font-black tracking-[-0.8px] leading-[30px] text-[#545454] dark:text-[#EDEDED]">
+                  Energia w domu <AppText className="text-[#545454] bg-[#CBFF4D] px-1 rounded">{summary.scenario.city_short || summary.scenario.city?.split(',')[0]}</AppText>
                 </AppText>
-                <AppText style={[styles.webLead, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                <AppText className="text-[13px] leading-[18px] mt-0.5 text-[#69747C] dark:text-[#9AA4AF]">
                   Symulacja zużycia na realnej pogodzie i prognoza XGBoost
                 </AppText>
               </View>
             ) : null}
 
             {/* Simulation Range Control (.range-options matching web) */}
-            <View
-              style={[
-                styles.rangeContainer,
-                {
-                  backgroundColor: isDark ? '#24272A' : '#FFFFFF',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(84, 84, 84, 0.18)',
-                },
-              ]}>
-              <AppText style={[styles.rangeLabel, { color: isDark ? '#EDEDED' : Palette.charcoal }]}>
+            <View className="flex-row items-center justify-between flex-wrap gap-2.5 p-2.5 rounded-2xl border bg-white border-[#545454]/20 dark:bg-[#24272A] dark:border-white/10">
+              <AppText className="text-xs font-extrabold text-[#545454] dark:text-[#EDEDED]">
                 Symulacja · ostatnie
               </AppText>
-              <View
-                style={[
-                  styles.rangePills,
-                  {
-                    backgroundColor: isDark ? '#1A1C1E' : '#FFFFFF',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(84, 84, 84, 0.2)',
-                  },
-                ]}>
+              <View className="flex-row items-center gap-[3px] p-[3px] rounded-lg border bg-white border-[#545454]/20 dark:bg-[#1A1C1E] dark:border-white/10">
                 {[1, 3, 5, 7, 14, 31].map((d) => {
                   const isSelected = selectedDays === d;
                   return (
                     <Pressable
                       key={d}
                       onPress={() => setSelectedDays(d)}
-                      style={[
-                        styles.rangePill,
-                        isSelected && styles.rangePillActive,
-                      ]}>
+                      className={`px-2 py-1 rounded-md ${isSelected ? 'bg-[#CBFF4D]' : ''}`}>
                       <AppText
-                        style={[
-                          styles.rangePillText,
-                          {
-                            color: isSelected
-                              ? Palette.charcoal
-                              : isDark
-                              ? '#9AA4AF'
-                              : Palette.charcoal,
-                            fontWeight: isSelected ? '800' : '600',
-                          },
-                        ]}>
+                        className={`text-xs ${
+                          isSelected
+                            ? 'text-[#545454] font-extrabold'
+                            : 'text-[#545454] dark:text-[#9AA4AF] font-semibold'
+                        }`}>
                         {d}d
                       </AppText>
                     </Pressable>
@@ -158,13 +132,13 @@ export default function DashboardScreen() {
             </View>
 
             {/* Simulation KPI Summary Card matching web app */}
-            <Card bordered style={styles.simSummaryCard}>
-              <View style={styles.simKpiRow}>
-                <View style={styles.simKpiCol}>
-                  <AppText style={[styles.simKpiLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+            <Card bordered className="p-4">
+              <View className="flex-row justify-between items-center gap-3">
+                <View className="flex-1 gap-[3px]">
+                  <AppText className="text-[11px] font-bold uppercase tracking-wide text-[#69747C] dark:text-[#9AA4AF]">
                     Symulacja · {selectedDays * 24} h
                   </AppText>
-                  <AppText style={[styles.simKpiValue, { color: isDark ? '#EDEDED' : Palette.charcoal }]}>
+                  <AppText className="text-[26px] font-black tracking-[-0.8px] text-[#545454] dark:text-[#EDEDED]">
                     {safeToFixed(
                       (summary.history_last_24h_kwh || 18) *
                         (selectedDays === 1
@@ -180,26 +154,26 @@ export default function DashboardScreen() {
                           : 31.8),
                       1
                     )}{' '}
-                    <AppText style={[styles.simKpiUnit, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    <AppText className="text-[13px] font-semibold text-[#69747C] dark:text-[#9AA4AF]">
                       kWh
                     </AppText>
                   </AppText>
-                  <AppText style={[styles.simKpiDate, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  <AppText className="text-[10px] mt-0.5 text-[#69747C] dark:text-[#9AA4AF]">
                     2026-09-22 – 2026-09-29
                   </AppText>
                 </View>
 
-                <View style={[styles.simKpiCol, styles.simKpiColRight]}>
-                  <AppText style={[styles.simKpiLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                <View className="flex-1 gap-[3px] items-end border-l border-[#545454]/15 pl-3">
+                  <AppText className="text-[11px] font-bold uppercase tracking-wide text-[#69747C] dark:text-[#9AA4AF]">
                     Prognoza · 24 h
                   </AppText>
-                  <AppText style={[styles.simKpiValue, { color: isDark ? Palette.chartreuse : Palette.charcoal }]}>
+                  <AppText className="text-[26px] font-black tracking-[-0.8px] text-[#545454] dark:text-[#CBFF4D]">
                     {safeToFixed(summary.forecast_next_24h_kwh, 1)}{' '}
-                    <AppText style={[styles.simKpiUnit, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    <AppText className="text-[13px] font-semibold text-[#69747C] dark:text-[#9AA4AF]">
                       kWh
                     </AppText>
                   </AppText>
-                  <AppText style={[styles.simKpiDate, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  <AppText className="text-[10px] mt-0.5 text-[#69747C] dark:text-[#9AA4AF]">
                     Oczekiwane zużycie
                   </AppText>
                 </View>
@@ -207,42 +181,40 @@ export default function DashboardScreen() {
             </Card>
 
             {/* Main Rate Hero Card */}
-            <Card highlightZone={currentZone} style={styles.heroCard}>
-              <View style={styles.heroTopRow}>
-                <View style={styles.heroBadgeRow}>
+            <Card highlightZone={currentZone} className="gap-3.5">
+              <View className="flex-row justify-between items-center flex-wrap gap-2">
+                <View className="flex-row items-center gap-2 flex-wrap">
                   <StatusBadge
                     zone={currentZone}
                     label={tariff?.period_label || 'Strefa dzienna'}
                     size="medium"
                   />
-                  <AppText style={[styles.heroHourText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                  <AppText className="text-xs font-bold text-[#545454] dark:text-[#CBD5E1]">
                     Godzina: {tariff?.current_hour ?? 12}:00
                   </AppText>
                 </View>
                 <Pressable
                   onPress={() => router.push('/schedule')}
                   accessibilityRole="button"
-                  style={styles.heroLink}>
-                  <AppText style={[styles.heroLinkText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  className="py-1.5 px-2 min-h-[44px] justify-center">
+                  <AppText className="text-[13px] font-extrabold text-[#1F5A17] dark:text-[#CBFF4D]">
                     Harmonogram 24h →
                   </AppText>
                 </Pressable>
               </View>
 
-              <View style={styles.heroRateRow}>
-                <View style={{ flex: 1, minWidth: 140 }}>
-                  <AppText style={[styles.rateLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+              <View className="flex-row justify-between items-end flex-wrap gap-3">
+                <View className="flex-1 min-w-[140px]">
+                  <AppText className="text-[11px] font-bold tracking-wide text-[#69747C] dark:text-[#9AA4AF]">
                     BIEŻĄCA STAWKA ENERGII
                   </AppText>
-                  <View style={styles.priceContainer}>
+                  <View className="flex-row items-baseline gap-1.5 mt-1 flex-wrap">
                     <AppText
-                      style={[
-                        styles.rateValue,
-                        { color: getPriceColor(currentZone) },
-                      ]}>
+                      className="text-[40px] font-black tracking-tighter leading-[44px]"
+                      style={{ color: getPriceColor(currentZone) }}>
                       {safeToFixed(currentPrice, 3)}
                     </AppText>
-                    <AppText style={[styles.rateUnit, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                    <AppText className="text-sm font-bold text-[#545454] dark:text-[#CBD5E1]">
                       € / kWh
                     </AppText>
                   </View>
@@ -250,26 +222,15 @@ export default function DashboardScreen() {
 
                 {/* Instant Power Reading */}
                 {lastReading ? (
-                  <View
-                    style={[
-                      styles.instantReadingBox,
-                      {
-                        borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)',
-                        backgroundColor: isDark ? '#1C1F24' : '#F7F6ED',
-                      },
-                    ]}>
-                    <AppText style={[styles.instantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  <View className="border rounded-2xl py-2 px-3 items-start gap-0.5 min-w-[120px] bg-[#F7F6ED] border-[#545454]/20 dark:bg-[#1C1F24] dark:border-[#373C44]">
+                    <AppText className="text-[10px] font-semibold text-[#69747C] dark:text-[#9AA4AF]">
                       Pobór chwilowy
                     </AppText>
-                    <AppText
-                      style={[
-                        styles.instantValue,
-                        { color: isDark ? Palette.chartreuse : Palette.sageGreen },
-                      ]}>
+                    <AppText className="text-lg font-black text-[#1F5A17] dark:text-[#CBFF4D]">
                       {safeToFixed(lastReading.total_kwh, 2)} kWh
                     </AppText>
                     {lastReading.temperature_c != null ? (
-                      <AppText style={[styles.instantTemp, { color: Palette.radioactiveGrass }]}>
+                      <AppText className="text-[11px] font-bold text-[#84DD63] dark:text-[#CBFF4D]">
                         Temp: {safeToFixed(lastReading.temperature_c, 1)} °C
                       </AppText>
                     ) : null}
@@ -277,16 +238,9 @@ export default function DashboardScreen() {
                 ) : null}
               </View>
 
-              <View
-                style={[
-                  styles.adviceBanner,
-                  {
-                    backgroundColor: isDark ? 'rgba(107, 170, 117, 0.12)' : '#EBF9E6',
-                    borderColor: isDark ? Palette.charcoal : Palette.radioactiveGrass,
-                  },
-                ]}>
+              <View className="flex-row items-center gap-2 p-2.5 rounded-xl border bg-[#EBF9E6] border-[#84DD63] dark:bg-[#6BAA75]/12 dark:border-[#545454]">
                 <Ionicons name="sparkles" size={18} color={Palette.radioactiveGrass} />
-                <AppText style={[styles.adviceText, { color: isDark ? '#E2E8F0' : '#1F5A17' }]}>
+                <AppText className="text-[13px] font-semibold flex-1 leading-[18px] text-[#1F5A17] dark:text-[#E2E8F0]">
                   {tariff?.period_advice || 'Uruchamiaj elastyczne urządzenia w optymalnych oknach cenowych!'}
                 </AppText>
               </View>
@@ -294,11 +248,11 @@ export default function DashboardScreen() {
 
             {/* Nearest Peak Alert Banner */}
             {nextPeak ? (
-              <Card bordered style={styles.peakAlertCard}>
-                <View style={styles.peakAlertHeader}>
-                  <View style={styles.peakAlertTitleGroup}>
+              <Card bordered className="gap-2">
+                <View className="flex-row justify-between items-center flex-wrap gap-2">
+                  <View className="flex-row items-center gap-2 flex-1 min-w-[180px]">
                     <Ionicons name="warning-outline" size={20} color="#EAB308" />
-                    <AppText style={[styles.peakAlertTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
+                    <AppText className="text-sm font-extrabold text-[#545454] dark:text-white">
                       Najbliższy szczyt zapotrzebowania
                     </AppText>
                   </View>
@@ -307,12 +261,12 @@ export default function DashboardScreen() {
                     label={`${nextPeak.timestamp ? nextPeak.timestamp.slice(11, 16) : ''} (~${safeToFixed(nextPeak.total_kwh, 2)} kWh)`}
                   />
                 </View>
-                <AppText style={[styles.peakAlertText, { color: isDark ? '#CBD5E1' : Palette.charcoal }]}>
+                <AppText className="text-[13px] leading-[18px] text-[#545454] dark:text-[#CBD5E1]">
                   {safeString(nextPeak.explanation, 'Wykryto szczyt obciążenia.')}
                 </AppText>
-                <View style={styles.peakAlertFooter}>
-                  <Pressable onPress={() => router.push('/devices')} accessibilityRole="button">
-                    <AppText style={[styles.peakAlertLink, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                <View className="flex-row justify-end pt-1">
+                  <Pressable onPress={() => router.push('/devices')} accessibilityRole="button" className="justify-center min-h-[44px]">
+                    <AppText className="text-[13px] font-extrabold text-[#1F5A17] dark:text-[#CBFF4D]">
                       Przesuń AGD na południe ➔
                     </AppText>
                   </Pressable>
@@ -321,13 +275,13 @@ export default function DashboardScreen() {
             ) : null}
 
             {/* Dominant Category & 24h Metrics */}
-            <View style={styles.sectionTitleRow}>
-              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
+            <View className="mt-1">
+              <AppText className="text-base font-black tracking-[-0.3px] text-[#545454] dark:text-white">
                 Podsumowanie bilansu 24h
               </AppText>
             </View>
 
-            <View style={styles.metricsGrid}>
+            <View className="flex-row flex-wrap gap-2">
               <MetricTile
                 label="Ostatnie 24h"
                 value={safeToFixed(summary.history_last_24h_kwh, 1)}
@@ -363,34 +317,34 @@ export default function DashboardScreen() {
 
             {/* Dominant Category Card */}
             {dominant ? (
-              <Card style={styles.dominantCard}>
-                <View style={styles.dominantHeader}>
-                  <View style={styles.dominantLeft}>
-                    <View style={styles.dominantIconCircle}>
+              <Card className="gap-3 mt-64">
+                <View className="flex-row justify-between items-center flex-wrap gap-2">
+                  <View className="flex-row items-center gap-2.5 flex-1 min-w-[180px]">
+                    <View className="w-9 h-9 rounded-full bg-red-100 justify-center items-center">
                       <Ionicons name="flame" size={18} color="#EF4444" />
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <AppText style={[styles.dominantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    <View className="flex-1">
+                      <AppText className="text-[10px] font-bold tracking-wide text-[#69747C] dark:text-[#9AA4AF]">
                         DOMINUJĄCA KATEGORIA ZUŻYCIA
                       </AppText>
-                      <AppText style={[styles.dominantName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
+                      <AppText className="text-[15px] font-extrabold mt-0.5 text-[#545454] dark:text-white">
                         {dominant.label}
                       </AppText>
                     </View>
                   </View>
-                  <View style={styles.dominantKwhBadge}>
-                    <AppText style={styles.dominantKwhText}>
+                  <View className="bg-red-100 px-2.5 py-1.5 rounded-xl">
+                    <AppText className="text-red-500 text-xs font-black">
                       {safeToFixed(dominant.kwh, 2)} kWh
                     </AppText>
                   </View>
                 </View>
 
-                <View style={styles.dominantFooter}>
-                  <AppText style={[styles.dominantKey, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                    Klucz: {dominant.key}
+                <View className="flex-row justify-between items-center flex-wrap gap-2 pt-1">
+                  <AppText className="text-[11px] text-[#69747C] dark:text-[#9AA4AF]">
+                    Klucz: {dominant.label}
                   </AppText>
-                  <Pressable onPress={() => router.push('/analytics')} accessibilityRole="button">
-                    <AppText style={[styles.dominantLink, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
+                  <Pressable onPress={() => router.push('/analytics')} accessibilityRole="button" className="justify-center min-h-[44px]">
+                    <AppText className="text-[13px] font-extrabold text-[#1F5A17] dark:text-[#CBFF4D]">
                       Pełna analityka 6 kategorii →
                     </AppText>
                   </Pressable>
@@ -398,61 +352,103 @@ export default function DashboardScreen() {
               </Card>
             ) : null}
 
-            {/* Quick Navigation Cards */}
-            <View style={styles.sectionTitleRow}>
-              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
-                Szybkie moduły
-              </AppText>
-            </View>
-
-            <View style={styles.quickModulesGrid}>
-              <Card onPress={() => router.push('/schedule')} style={styles.moduleCard}>
-                <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#EBF9E6' }]}>
-                  <Ionicons name="time" size={20} color={Palette.radioactiveGrass} />
+            {/* Quick Navigation Cards - Styled with NativeWind */}
+            <View className="w-full mb-3 mt-4">
+              <View className="flex-row items-center justify-between mb-3 px-0.5">
+                <View className="flex-row items-center gap-2">
+                  <View className="w-1.5 h-4 rounded-full bg-[#84DD63] dark:bg-[#CBFF4D]" />
+                  <AppText className="text-base font-extrabold text-[#545454] dark:text-white">
+                    Szybkie moduły
+                  </AppText>
                 </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
-                  Harmonogram 24h
-                </AppText>
-                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  Strefy zielona/żółta/czerwona i porady dla pokoleń.
-                </AppText>
-              </Card>
-
-              <Card onPress={() => router.push('/devices')} style={styles.moduleCard}>
-                <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : 'rgba(107, 170, 117, 0.15)' }]}>
-                  <Ionicons name="calculator" size={20} color={Palette.sageGreen} />
+                <View className="px-2.5 py-0.5 rounded-full bg-[#84DD63]/15 border border-[#84DD63]/30 dark:bg-[#CBFF4D]/20 dark:border-[#CBFF4D]/30">
+                  <AppText className="text-[10px] font-bold text-[#1F5A17] tracking-wider uppercase dark:text-[#CBFF4D]">
+                    Skróty
+                  </AppText>
                 </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
-                  Kalkulator AGD
-                </AppText>
-                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  Przelicz zysk z przesunięcia pralki na 12:00.
-                </AppText>
-              </Card>
+              </View>
 
-              <Card onPress={() => router.push('/solar')} style={styles.moduleCard}>
-                <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#FEF9C3' }]}>
-                  <Ionicons name="sunny" size={20} color="#EAB308" />
-                </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
-                  Fotowoltaika & Bateria
-                </AppText>
-                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  Symulacja wariantu A vs B i autokonsumpcja.
-                </AppText>
-              </Card>
+              <View className="flex-row flex-wrap gap-2.5 w-full">
+                {/* Harmonogram 24h */}
+                <Pressable
+                  onPress={() => router.push('/schedule')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Przejdź do Harmonogram 24h"
+                  className="flex-1 min-w-[47%] p-3.5 rounded-2xl border bg-white border-slate-200/80 shadow-sm dark:bg-[#24272A] dark:border-white/10 active:opacity-75 active:scale-[0.98]">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <View className="w-9 h-9 rounded-xl items-center justify-center bg-[#84DD63]/15 dark:bg-[#2B3037]">
+                      <Ionicons name="time" size={20} color={Palette.radioactiveGrass} />
+                    </View>
+                    <Ionicons name="chevron-forward" size={14} color={isDark ? '#64748B' : '#94A3B8'} />
+                  </View>
+                  <AppText className="text-sm font-extrabold text-[#545454] dark:text-white">
+                    Harmonogram 24h
+                  </AppText>
+                  <AppText className="text-xs text-[#69747C] dark:text-[#9AA4AF] leading-4 mt-0.5">
+                    Strefy zielona/żółta/czerwona i porady dla pokoleń.
+                  </AppText>
+                </Pressable>
 
-              <Card onPress={() => router.push('/analytics')} style={styles.moduleCard}>
-                <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#F1F5F9' }]}>
-                  <Ionicons name="stats-chart" size={20} color={Palette.charcoal} />
-                </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
-                  Prognoza & Metryki
-                </AppText>
-                <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                  Dokładność modelu MAE i prognozy do 168h.
-                </AppText>
-              </Card>
+                {/* Kalkulator AGD */}
+                <Pressable
+                  onPress={() => router.push('/devices')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Przejdź do Kalkulator AGD"
+                  className="flex-1 min-w-[47%] p-3.5 rounded-2xl border bg-white border-slate-200/80 shadow-sm dark:bg-[#24272A] dark:border-white/10 active:opacity-75 active:scale-[0.98]">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <View className="w-9 h-9 rounded-xl items-center justify-center bg-[#6BAA75]/15 dark:bg-[#2B3037]">
+                      <Ionicons name="calculator" size={20} color={Palette.sageGreen} />
+                    </View>
+                    <Ionicons name="chevron-forward" size={14} color={isDark ? '#64748B' : '#94A3B8'} />
+                  </View>
+                  <AppText className="text-sm font-extrabold text-[#545454] dark:text-white">
+                    Kalkulator AGD
+                  </AppText>
+                  <AppText className="text-xs text-[#69747C] dark:text-[#9AA4AF] leading-4 mt-0.5">
+                    Przelicz zysk z przesunięcia pralki na 12:00.
+                  </AppText>
+                </Pressable>
+
+                {/* Fotowoltaika & Bateria */}
+                <Pressable
+                  onPress={() => router.push('/solar')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Przejdź do Fotowoltaika & Bateria"
+                  className="flex-1 min-w-[47%] p-3.5 rounded-2xl border bg-white border-slate-200/80 shadow-sm dark:bg-[#24272A] dark:border-white/10 active:opacity-75 active:scale-[0.98]">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <View className="w-9 h-9 rounded-xl items-center justify-center bg-yellow-100 dark:bg-[#2B3037]">
+                      <Ionicons name="sunny" size={20} color="#EAB308" />
+                    </View>
+                    <Ionicons name="chevron-forward" size={14} color={isDark ? '#64748B' : '#94A3B8'} />
+                  </View>
+                  <AppText className="text-sm font-extrabold text-[#545454] dark:text-white">
+                    Fotowoltaika & Bateria
+                  </AppText>
+                  <AppText className="text-xs text-[#69747C] dark:text-[#9AA4AF] leading-4 mt-0.5">
+                    Symulacja wariantu A vs B i autokonsumpcja.
+                  </AppText>
+                </Pressable>
+
+                {/* Prognoza & Metryki */}
+                <Pressable
+                  onPress={() => router.push('/analytics')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Przejdź do Prognoza & Metryki"
+                  className="flex-1 min-w-[47%] p-3.5 rounded-2xl border bg-white border-slate-200/80 shadow-sm dark:bg-[#24272A] dark:border-white/10 active:opacity-75 active:scale-[0.98]">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <View className="w-9 h-9 rounded-xl items-center justify-center bg-slate-100 dark:bg-[#2B3037]">
+                      <Ionicons name="stats-chart" size={20} color={isDark ? '#CBFF4D' : Palette.charcoal} />
+                    </View>
+                    <Ionicons name="chevron-forward" size={14} color={isDark ? '#64748B' : '#94A3B8'} />
+                  </View>
+                  <AppText className="text-sm font-extrabold text-[#545454] dark:text-white">
+                    Prognoza & Metryki
+                  </AppText>
+                  <AppText className="text-xs text-[#69747C] dark:text-[#9AA4AF] leading-4 mt-0.5">
+                    Dokładność modelu MAE i prognozy do 168h.
+                  </AppText>
+                </Pressable>
+              </View>
             </View>
           </>
         ) : (
@@ -468,356 +464,3 @@ export default function DashboardScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    alignSelf: 'center',
-    width: '100%',
-    gap: 14,
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 280,
-    gap: 12,
-  },
-  loadingText: {
-    fontSize: 14,
-  },
-  heroCard: {
-    gap: 14,
-  },
-  heroTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  heroBadgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  heroHourText: {
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  heroLink: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    minHeight: 44,
-    justifyContent: 'center',
-  },
-  heroLinkText: {
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  heroRateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  rateLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  priceContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 6,
-    marginTop: 4,
-    flexWrap: 'wrap',
-  },
-  rateValue: {
-    fontSize: 40,
-    fontWeight: '900',
-    letterSpacing: -1,
-    lineHeight: 44,
-  },
-  rateUnit: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  instantReadingBox: {
-    borderWidth: 1,
-    borderRadius: 14,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    alignItems: 'flex-start',
-    gap: 2,
-    minWidth: 120,
-  },
-  instantLabel: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  instantValue: {
-    fontSize: 18,
-    fontWeight: '900',
-  },
-  instantTemp: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  adviceBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  adviceText: {
-    fontSize: 13,
-    fontWeight: '600',
-    flex: 1,
-    lineHeight: 18,
-  },
-  peakAlertCard: {
-    gap: 8,
-  },
-  peakAlertHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  peakAlertTitleGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-    minWidth: 180,
-  },
-  peakAlertTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  peakAlertText: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  peakAlertFooter: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingTop: 4,
-  },
-  peakAlertLink: {
-    fontSize: 13,
-    fontWeight: '800',
-    minHeight: 44,
-    textAlignVertical: 'center',
-  },
-  sectionTitleRow: {
-    marginTop: 4,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    letterSpacing: -0.3,
-  },
-  webHeaderSection: {
-    paddingVertical: 6,
-    gap: 4,
-  },
-  webEyebrow: {
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-  },
-  webTitle: {
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.8,
-    lineHeight: 30,
-  },
-  webTitleHighlight: {
-    color: Palette.charcoal,
-    backgroundColor: Palette.chartreuse,
-    paddingHorizontal: 4,
-    borderRadius: 4,
-  },
-  webLead: {
-    fontSize: 13,
-    lineHeight: 18,
-    marginTop: 2,
-  },
-  rangeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: 10,
-    padding: 10,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  rangeLabel: {
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  rangePills: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    padding: 3,
-    borderRadius: 9,
-    borderWidth: 1,
-  },
-  rangePill: {
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 6,
-  },
-  rangePillActive: {
-    backgroundColor: Palette.chartreuse,
-  },
-  rangePillText: {
-    fontSize: 12,
-  },
-  simSummaryCard: {
-    padding: 16,
-  },
-  simKpiRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 12,
-  },
-  simKpiCol: {
-    flex: 1,
-    gap: 3,
-  },
-  simKpiColRight: {
-    alignItems: 'flex-end',
-    borderLeftWidth: 1,
-    borderLeftColor: 'rgba(84, 84, 84, 0.15)',
-    paddingLeft: 12,
-  },
-  simKpiLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  simKpiValue: {
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.8,
-  },
-  simKpiUnit: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  simKpiDate: {
-    fontSize: 10,
-    marginTop: 2,
-  },
-  metricsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  dominantCard: {
-    gap: 12,
-  },
-  dominantHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  dominantLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flex: 1,
-    minWidth: 180,
-  },
-  dominantIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FEE2E2',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dominantLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  dominantName: {
-    fontSize: 15,
-    fontWeight: '800',
-    marginTop: 2,
-  },
-  dominantKwhBadge: {
-    backgroundColor: '#FEE2E2',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
-  },
-  dominantKwhText: {
-    color: '#EF4444',
-    fontSize: 12,
-    fontWeight: '900',
-  },
-  dominantFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingTop: 4,
-  },
-  dominantKey: {
-    fontSize: 11,
-  },
-  dominantLink: {
-    fontSize: 13,
-    fontWeight: '800',
-    minHeight: 44,
-    textAlignVertical: 'center',
-  },
-  quickModulesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  moduleCard: {
-    flex: 1,
-    minWidth: '47%',
-    padding: 12,
-    gap: 6,
-  },
-  moduleIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 4,
-  },
-  moduleTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  moduleDesc: {
-    fontSize: 12,
-    lineHeight: 16,
-  },
-});

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Appearance, ColorSchemeName, Platform } from 'react-native';
+import { colorScheme } from 'nativewind';
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -44,6 +45,11 @@ export const ThemeModeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     } catch {
       // ignore native appearance error if unsupported
+    }
+    try {
+      colorScheme.set(themeMode);
+    } catch {
+      // ignore
     }
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       if (themeMode === 'dark') {
