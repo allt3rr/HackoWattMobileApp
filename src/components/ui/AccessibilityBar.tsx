@@ -20,33 +20,36 @@ export const AccessibilityBar: React.FC = () => {
           borderColor: isDark ? '#333A44' : '#E2E8F0',
         },
       ]}>
-      {/* Animated Theme Mode Switch */}
-      <ThemeSwitch />
-
-      {/* Label and Current Zoom Indicator */}
-      <View style={styles.leftGroup}>
-        <Ionicons
-          name="text-outline"
-          size={18}
-          color={isDark ? Palette.chartreuse : '#1F5A17'}
-        />
-        <AppText style={[styles.title, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-          Rozmiar tekstu:
-        </AppText>
-        <View
-          style={[
-            styles.percentPill,
-            {
-              backgroundColor: isDark ? '#2B313A' : '#EDF1EE',
-            },
-          ]}>
+      {/* Top Row: Theme switch and Font Size indicator */}
+      <View style={styles.topRow}>
+        <ThemeSwitch />
+        <View style={styles.leftGroup}>
+          <Ionicons
+            name="text-outline"
+            size={16}
+            color={isDark ? Palette.chartreuse : '#1F5A17'}
+          />
           <AppText
-            style={[
-              styles.percentText,
-              { color: isDark ? Palette.chartreuse : Palette.charcoal },
-            ]}>
-            {scalePercent}
+            allowScaling={false}
+            style={[styles.title, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+            Rozmiar tekstu:
           </AppText>
+          <View
+            style={[
+              styles.percentPill,
+              {
+                backgroundColor: isDark ? '#2B313A' : '#EDF1EE',
+              },
+            ]}>
+            <AppText
+              allowScaling={false}
+              style={[
+                styles.percentText,
+                { color: isDark ? Palette.chartreuse : Palette.charcoal },
+              ]}>
+              {scalePercent}
+            </AppText>
+          </View>
         </View>
       </View>
 
@@ -151,30 +154,32 @@ export const AccessibilityBar: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 4,
+    marginBottom: 8,
+    gap: 10,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   leftGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
   },
   title: {
     fontSize: 12,
     fontWeight: '700',
   },
   percentPill: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 7,
     paddingVertical: 2,
-    borderRadius: 12,
+    borderRadius: 10,
   },
   percentText: {
     fontSize: 11,
@@ -183,12 +188,14 @@ const styles = StyleSheet.create({
   controlsGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
     gap: 6,
   },
   presetBtn: {
+    flex: 1,
     paddingVertical: 7,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     borderRadius: 8,
     minHeight: 40,
     justifyContent: 'center',

@@ -38,8 +38,12 @@ export const ThemeModeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Synchronize with Native Appearance and Web DOM
   useEffect(() => {
-    if (Appearance && typeof Appearance.setColorScheme === 'function') {
-      Appearance.setColorScheme(themeMode);
+    try {
+      if (Appearance && typeof Appearance.setColorScheme === 'function') {
+        Appearance.setColorScheme(themeMode);
+      }
+    } catch {
+      // ignore native appearance error if unsupported
     }
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       if (themeMode === 'dark') {
