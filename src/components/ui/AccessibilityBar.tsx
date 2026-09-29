@@ -1,12 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, Pressable, useColorScheme } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTextScale } from '@/context/TextScaleContext';
+import { useThemeMode } from '@/context/ThemeModeContext';
 import { AppText } from '@/components/ui/AppText';
 import { Palette } from '@/constants/theme';
+import { ThemeSwitch } from '@/components/ui/ThemeSwitch';
 
 export const AccessibilityBar: React.FC = () => {
-  const isDark = useColorScheme() === 'dark';
+  const { isDark } = useThemeMode();
   const { preset, increase, decrease, setPreset, isMin, isMax, scalePercent } = useTextScale();
 
   return (
@@ -18,6 +20,9 @@ export const AccessibilityBar: React.FC = () => {
           borderColor: isDark ? '#333A44' : '#E2E8F0',
         },
       ]}>
+      {/* Animated Theme Mode Switch */}
+      <ThemeSwitch />
+
       {/* Label and Current Zoom Indicator */}
       <View style={styles.leftGroup}>
         <Ionicons

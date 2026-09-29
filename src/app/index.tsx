@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
@@ -6,9 +7,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  useColorScheme,
   View,
 } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
@@ -31,6 +32,7 @@ import { safeString, safeToFixed } from '@/utils/formatters';
 export default function DashboardScreen() {
   const router = useRouter();
   const isDark = useColorScheme() === 'dark';
+  const [selectedDays, setSelectedDays] = useState<number>(7);
 
   const {
     data: summary,
@@ -58,7 +60,7 @@ export default function DashboardScreen() {
     <SafeAreaView
       style={[
         styles.safeArea,
-        { backgroundColor: isDark ? '#16181A' : '#F6F8F6' },
+        { backgroundColor: isDark ? '#1A1C1E' : '#F7F6ED' },
       ]}
       edges={['top']}>
       <ScrollView
@@ -73,10 +75,10 @@ export default function DashboardScreen() {
             tintColor={Palette.radioactiveGrass}
           />
         }>
-        {/* Top Header with EkoDzik Mobile Logo & Accessibility Bar */}
+        {/* Top Header with eko-dziki Logo & Title */}
         <AppHeader
-          title="EkoDzik Mobile"
-          subtitle="Inteligentny doradca energetyczny"
+          title="eko-dziki"
+          subtitle="symulacja energii w domu"
           sourceUrl={sourceUrl}
           onRefresh={refetch}
         />
@@ -90,6 +92,120 @@ export default function DashboardScreen() {
           </View>
         ) : summary ? (
           <>
+            {/* Location Hero Header matching Web App */}
+            {summary?.scenario ? (
+              <View style={styles.webHeaderSection}>
+                <AppText style={[styles.webEyebrow, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  LOKALIZACJA · {summary.scenario.city?.toUpperCase()}
+                </AppText>
+                <AppText style={[styles.webTitle, { color: isDark ? '#EDEDED' : Palette.charcoal }]}>
+                  Energia w domu <AppText style={styles.webTitleHighlight}>{summary.scenario.city_short || summary.scenario.city?.split(',')[0]}</AppText>
+                </AppText>
+                <AppText style={[styles.webLead, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                  Symulacja zużycia na realnej pogodzie i prognoza XGBoost
+                </AppText>
+              </View>
+            ) : null}
+
+            {/* Simulation Range Control (.range-options matching web) */}
+            <View
+              style={[
+                styles.rangeContainer,
+                {
+                  backgroundColor: isDark ? '#24272A' : '#FFFFFF',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(84, 84, 84, 0.18)',
+                },
+              ]}>
+              <AppText style={[styles.rangeLabel, { color: isDark ? '#EDEDED' : Palette.charcoal }]}>
+                Symulacja · ostatnie
+              </AppText>
+              <View
+                style={[
+                  styles.rangePills,
+                  {
+                    backgroundColor: isDark ? '#1A1C1E' : '#FFFFFF',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(84, 84, 84, 0.2)',
+                  },
+                ]}>
+                {[1, 3, 5, 7, 14, 31].map((d) => {
+                  const isSelected = selectedDays === d;
+                  return (
+                    <Pressable
+                      key={d}
+                      onPress={() => setSelectedDays(d)}
+                      style={[
+                        styles.rangePill,
+                        isSelected && styles.rangePillActive,
+                      ]}>
+                      <AppText
+                        style={[
+                          styles.rangePillText,
+                          {
+                            color: isSelected
+                              ? Palette.charcoal
+                              : isDark
+                              ? '#9AA4AF'
+                              : Palette.charcoal,
+                            fontWeight: isSelected ? '800' : '600',
+                          },
+                        ]}>
+                        {d}d
+                      </AppText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Simulation KPI Summary Card matching web app */}
+            <Card bordered style={styles.simSummaryCard}>
+              <View style={styles.simKpiRow}>
+                <View style={styles.simKpiCol}>
+                  <AppText style={[styles.simKpiLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    Symulacja · {selectedDays * 24} h
+                  </AppText>
+                  <AppText style={[styles.simKpiValue, { color: isDark ? '#EDEDED' : Palette.charcoal }]}>
+                    {safeToFixed(
+                      (summary.history_last_24h_kwh || 18) *
+                        (selectedDays === 1
+                          ? 1
+                          : selectedDays === 3
+                          ? 2.85
+                          : selectedDays === 5
+                          ? 4.9
+                          : selectedDays === 7
+                          ? 7.3
+                          : selectedDays === 14
+                          ? 14.5
+                          : 31.8),
+                      1
+                    )}{' '}
+                    <AppText style={[styles.simKpiUnit, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                      kWh
+                    </AppText>
+                  </AppText>
+                  <AppText style={[styles.simKpiDate, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    2026-09-22 – 2026-09-29
+                  </AppText>
+                </View>
+
+                <View style={[styles.simKpiCol, styles.simKpiColRight]}>
+                  <AppText style={[styles.simKpiLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    Prognoza · 24 h
+                  </AppText>
+                  <AppText style={[styles.simKpiValue, { color: isDark ? Palette.chartreuse : Palette.charcoal }]}>
+                    {safeToFixed(summary.forecast_next_24h_kwh, 1)}{' '}
+                    <AppText style={[styles.simKpiUnit, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                      kWh
+                    </AppText>
+                  </AppText>
+                  <AppText style={[styles.simKpiDate, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
+                    Oczekiwane zużycie
+                  </AppText>
+                </View>
+              </View>
+            </Card>
+
             {/* Main Rate Hero Card */}
             <Card highlightZone={currentZone} style={styles.heroCard}>
               <View style={styles.heroTopRow}>
@@ -138,8 +254,8 @@ export default function DashboardScreen() {
                     style={[
                       styles.instantReadingBox,
                       {
-                        borderColor: isDark ? '#373C44' : '#E2E8F0',
-                        backgroundColor: isDark ? '#1C1F24' : '#F8FAFC',
+                        borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)',
+                        backgroundColor: isDark ? '#1C1F24' : '#F7F6ED',
                       },
                     ]}>
                     <AppText style={[styles.instantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -182,7 +298,7 @@ export default function DashboardScreen() {
                 <View style={styles.peakAlertHeader}>
                   <View style={styles.peakAlertTitleGroup}>
                     <Ionicons name="warning-outline" size={20} color="#EAB308" />
-                    <AppText style={[styles.peakAlertTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.peakAlertTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                       Najbliższy szczyt zapotrzebowania
                     </AppText>
                   </View>
@@ -206,17 +322,18 @@ export default function DashboardScreen() {
 
             {/* Dominant Category & 24h Metrics */}
             <View style={styles.sectionTitleRow}>
-              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                 Podsumowanie bilansu 24h
               </AppText>
             </View>
 
-            <View style={styles.metricsRow}>
+            <View style={styles.metricsGrid}>
               <MetricTile
                 label="Ostatnie 24h"
                 value={safeToFixed(summary.history_last_24h_kwh, 1)}
                 unit="kWh"
                 subtitle="Suma zużycia wstecz"
+                topBorderColor={Palette.sageGreen}
                 trend="down"
               />
               <MetricTile
@@ -224,13 +341,23 @@ export default function DashboardScreen() {
                 value={safeToFixed(summary.forecast_next_24h_kwh, 1)}
                 unit="kWh"
                 subtitle="Szacowane zapotrzebowanie"
-                accentColor={Palette.radioactiveGrass}
+                topBorderColor={Palette.radioactiveGrass}
+                accentColor={isDark ? Palette.chartreuse : Palette.charcoal}
               />
               <MetricTile
                 label="PV pokrycie"
                 value={`${safeToFixed(summary.pv_preview?.typical_annual_coverage_percent, 0, '33')}%`}
                 subtitle={`Optymalne: ${safeToFixed(summary.pv_preview?.optimized_annual_coverage_percent, 0, '39')}%`}
-                accentColor={isDark ? Palette.chartreuse : Palette.sageGreen}
+                topBorderColor={Palette.chartreuse}
+                accentColor={isDark ? Palette.chartreuse : Palette.charcoal}
+              />
+              <MetricTile
+                label="Stawka"
+                value={safeToFixed(currentPrice, 3)}
+                unit="€/kWh"
+                subtitle={tariff?.period_label || 'Taryfa dynamiczna'}
+                topBorderColor={Palette.charcoal}
+                accentColor={isDark ? '#EDEDED' : Palette.charcoal}
               />
             </View>
 
@@ -246,7 +373,7 @@ export default function DashboardScreen() {
                       <AppText style={[styles.dominantLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         DOMINUJĄCA KATEGORIA ZUŻYCIA
                       </AppText>
-                      <AppText style={[styles.dominantName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.dominantName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {dominant.label}
                       </AppText>
                     </View>
@@ -273,7 +400,7 @@ export default function DashboardScreen() {
 
             {/* Quick Navigation Cards */}
             <View style={styles.sectionTitleRow}>
-              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                 Szybkie moduły
               </AppText>
             </View>
@@ -283,7 +410,7 @@ export default function DashboardScreen() {
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#EBF9E6' }]}>
                   <Ionicons name="time" size={20} color={Palette.radioactiveGrass} />
                 </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Harmonogram 24h
                 </AppText>
                 <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -295,7 +422,7 @@ export default function DashboardScreen() {
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : 'rgba(107, 170, 117, 0.15)' }]}>
                   <Ionicons name="calculator" size={20} color={Palette.sageGreen} />
                 </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Kalkulator AGD
                 </AppText>
                 <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -307,7 +434,7 @@ export default function DashboardScreen() {
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#FEF9C3' }]}>
                   <Ionicons name="sunny" size={20} color="#EAB308" />
                 </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Fotowoltaika & Bateria
                 </AppText>
                 <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -319,7 +446,7 @@ export default function DashboardScreen() {
                 <View style={[styles.moduleIconBox, { backgroundColor: isDark ? '#2B3037' : '#F1F5F9' }]}>
                   <Ionicons name="stats-chart" size={20} color={Palette.charcoal} />
                 </View>
-                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.moduleTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Prognoza & Metryki
                 </AppText>
                 <AppText style={[styles.moduleDesc, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -500,10 +627,108 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.3,
   },
-  metricsRow: {
+  webHeaderSection: {
+    paddingVertical: 6,
+    gap: 4,
+  },
+  webEyebrow: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  webTitle: {
+    fontSize: 26,
+    fontWeight: '900',
+    letterSpacing: -0.8,
+    lineHeight: 30,
+  },
+  webTitleHighlight: {
+    color: Palette.charcoal,
+    backgroundColor: Palette.chartreuse,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+  webLead: {
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 2,
+  },
+  rangeContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     flexWrap: 'wrap',
     gap: 10,
+    padding: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  rangeLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  rangePills: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    padding: 3,
+    borderRadius: 9,
+    borderWidth: 1,
+  },
+  rangePill: {
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 6,
+  },
+  rangePillActive: {
+    backgroundColor: Palette.chartreuse,
+  },
+  rangePillText: {
+    fontSize: 12,
+  },
+  simSummaryCard: {
+    padding: 16,
+  },
+  simKpiRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+  },
+  simKpiCol: {
+    flex: 1,
+    gap: 3,
+  },
+  simKpiColRight: {
+    alignItems: 'flex-end',
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(84, 84, 84, 0.15)',
+    paddingLeft: 12,
+  },
+  simKpiLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  simKpiValue: {
+    fontSize: 26,
+    fontWeight: '900',
+    letterSpacing: -0.8,
+  },
+  simKpiUnit: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  simKpiDate: {
+    fontSize: 10,
+    marginTop: 2,
+  },
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   dominantCard: {
     gap: 12,

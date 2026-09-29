@@ -1,7 +1,8 @@
 import React from 'react';
 import { Palette } from '@/constants/theme';
 import { ScheduleZone } from '@/types/api';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AppText } from '@/components/ui/AppText';
 
 interface StatusBadgeProps {

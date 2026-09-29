@@ -6,9 +6,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  useColorScheme,
   View,
 } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
@@ -72,7 +72,7 @@ export default function SolarScreen() {
     <SafeAreaView
       style={[
         styles.safeArea,
-        { backgroundColor: isDark ? '#16181A' : '#F6F8F6' },
+        { backgroundColor: isDark ? '#1A1C1E' : '#F7F6ED' },
       ]}
       edges={['top']}>
       <ScrollView
@@ -89,7 +89,7 @@ export default function SolarScreen() {
         }>
         {/* Header with EkoDzik Mobile Logo & Accessibility Bar */}
         <AppHeader
-          title="EkoDzik Mobile"
+          title="eko-dziki"
           subtitle="Fotowoltaika, Magazyn & Oszczędności"
           sourceUrl={sourceUrl}
           onRefresh={handleRefresh}
@@ -103,7 +103,7 @@ export default function SolarScreen() {
             <View style={styles.simTitleGroup}>
               <Ionicons name="sunny" size={24} color="#EAB308" />
               <View style={{ flex: 1 }}>
-                <AppText style={[styles.simTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.simTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Symulator Instalacji PV ({selectedKwp} kWp)
                 </AppText>
                 <AppText style={[styles.simSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -116,10 +116,10 @@ export default function SolarScreen() {
 
           {/* Stepper for kWp (Senior-Friendly 44px buttons) */}
           <View style={styles.stepperWrap}>
-            <AppText style={[styles.stepperLabel, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+            <AppText style={[styles.stepperLabel, { color: isDark ? '#E2E8F0' : Palette.charcoal }]}>
               Wybierz moc instalacji fotowoltaicznej:
             </AppText>
-            <View style={[styles.stepperBox, { borderColor: isDark ? '#373C44' : '#CBD5E1', backgroundColor: isDark ? '#1C1F24' : '#F8FAFC' }]}>
+            <View style={[styles.stepperBox, { borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)', backgroundColor: isDark ? '#1C1F24' : '#FFFFFF' }]}>
               <Pressable
                 onPress={() => setSelectedKwp((k) => Math.max(2, k - 1))}
                 accessibilityRole="button"
@@ -127,7 +127,7 @@ export default function SolarScreen() {
                 style={styles.stepBtn}>
                 <AppText style={[styles.stepBtnText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>-</AppText>
               </Pressable>
-              <AppText style={[styles.stepValText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.stepValText, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                 {selectedKwp} kWp
               </AppText>
               <Pressable
@@ -167,7 +167,7 @@ export default function SolarScreen() {
                 {/* Variant A */}
                 <Card bordered style={styles.variantCard}>
                   <View style={styles.variantHeader}>
-                    <AppText style={[styles.variantName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.variantName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                       {simResult.variant_a.name}
                     </AppText>
                     <StatusBadge variant="yellow" label="Wariant A" />
@@ -187,7 +187,7 @@ export default function SolarScreen() {
                       <AppText style={[styles.statLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         Użyte ze słońca:
                       </AppText>
-                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {safeToFixed(simResult.variant_a.self_consumption_kwh, 0)} kWh
                       </AppText>
                     </View>
@@ -196,7 +196,7 @@ export default function SolarScreen() {
                       <AppText style={[styles.statLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         Eksport do sieci:
                       </AppText>
-                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {safeToFixed(simResult.variant_a.exported_kwh, 0)} kWh
                       </AppText>
                     </View>
@@ -214,7 +214,7 @@ export default function SolarScreen() {
                       <AppText style={[styles.statLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         Czas zwrotu:
                       </AppText>
-                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {formatPaybackYears(simResult.variant_a.payback_years)}
                       </AppText>
                     </View>
@@ -224,7 +224,7 @@ export default function SolarScreen() {
                 {/* Variant B */}
                 <Card bordered style={[styles.variantCard, styles.variantBHighlight]}>
                   <View style={styles.variantHeader}>
-                    <AppText style={[styles.variantName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.variantName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                       {simResult.variant_b.name}
                     </AppText>
                     <StatusBadge variant="green" label="Rekomendowany" />
@@ -244,7 +244,7 @@ export default function SolarScreen() {
                       <AppText style={[styles.statLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         Użyte ze słońca:
                       </AppText>
-                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {safeToFixed(simResult.variant_b.self_consumption_kwh, 0)} kWh
                       </AppText>
                     </View>
@@ -253,7 +253,7 @@ export default function SolarScreen() {
                       <AppText style={[styles.statLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         Eksport do sieci:
                       </AppText>
-                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {safeToFixed(simResult.variant_b.exported_kwh, 0)} kWh
                       </AppText>
                     </View>
@@ -271,7 +271,7 @@ export default function SolarScreen() {
                       <AppText style={[styles.statLabel, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
                         Czas zwrotu:
                       </AppText>
-                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.statVal, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {formatPaybackYears(simResult.variant_b.payback_years)}
                       </AppText>
                     </View>
@@ -302,7 +302,7 @@ export default function SolarScreen() {
               {/* Shifting recommendations for PV */}
               {simResult.device_recommendations && simResult.device_recommendations.length > 0 ? (
                 <View style={styles.recSection}>
-                  <AppText style={[styles.recTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.recTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                     Rekomendacje przesunięć pod profil PV:
                   </AppText>
                   {simResult.device_recommendations.map((d, idx) => (
@@ -311,13 +311,13 @@ export default function SolarScreen() {
                       style={[
                         styles.recCard,
                         {
-                          backgroundColor: isDark ? '#1C1F24' : '#F8FAFC',
-                          borderColor: isDark ? '#373C44' : '#E2E8F0',
+                          backgroundColor: isDark ? '#1C1F24' : '#FFFFFF',
+                          borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)',
                         },
                       ]}>
                       <View style={styles.recHeader}>
                         <Ionicons name="checkmark-circle" size={18} color={Palette.radioactiveGrass} />
-                        <AppText style={[styles.recDeviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                        <AppText style={[styles.recDeviceName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                           {d.device}
                         </AppText>
                       </View>
@@ -340,7 +340,7 @@ export default function SolarScreen() {
         {/* ============================================================ */}
         <View style={styles.sectionTitleRow}>
           <Ionicons name="grid" size={18} color={Palette.sageGreen} />
-          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
             Tabela porównawcza mocy PV (2 – 10 kWp)
           </AppText>
         </View>
@@ -377,7 +377,7 @@ export default function SolarScreen() {
                       { borderBottomColor: isDark ? '#2E333A' : '#F1F5F9' },
                     ]}>
                     <View style={{ width: 90 }}>
-                      <AppText style={[styles.tdBold, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.tdBold, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {v.kwp} kWp
                       </AppText>
                     </View>
@@ -427,21 +427,21 @@ export default function SolarScreen() {
           <>
             <View style={styles.sectionTitleRow}>
               <Ionicons name="information-circle" size={18} color={Palette.slateGrey} />
-              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                 Założenia modelowe systemu
               </AppText>
             </View>
 
             <Card style={styles.assumpCard}>
               <View style={styles.assumpHeader}>
-                <AppText style={[styles.assumpLocation, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.assumpLocation, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   📍 Lokalizacja: {assumptionsData.location}
                 </AppText>
                 <StatusBadge variant="neutral" label={`Okno PV: ${assumptionsData.pv_assumptions?.recommended_window || '10:00 – 15:00'}`} />
               </View>
 
               <View style={styles.profilesBox}>
-                <AppText style={[styles.profilesHeader, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.profilesHeader, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Parametry gospodarstwa domowego:
                 </AppText>
                 <View style={styles.profileRow}>

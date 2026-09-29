@@ -2,7 +2,8 @@ import { Palette } from '@/constants/theme';
 import { AppLogo } from '@/components/ui/AppLogo';
 import { Ionicons } from '@expo/vector-icons';
 import { router, Slot, usePathname } from 'expo-router';
-import { Platform, Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 interface TabItem {
   name: string;
@@ -42,13 +43,13 @@ export default function AppTabs() {
         <View style={styles.navContent}>
           {/* Brand Logo & Name */}
           <Pressable onPress={() => router.push('/')} style={styles.brandGroup}>
-            <AppLogo size={32} />
+            <AppLogo size={34} />
             <View>
-              <Text style={[styles.brandTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
-                EkoDzik Mobile
+              <Text style={[styles.brandTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
+                eko-dziki
               </Text>
               <Text style={[styles.brandSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
-                Dla Seniorów i Młodzieży
+                Symulacja i prognoza energii
               </Text>
             </View>
           </Pressable>
@@ -85,7 +86,7 @@ export default function AppTabs() {
                       isFocused
                         ? isDark
                           ? Palette.chartreuse
-                          : '#0F172A'
+                          : Palette.charcoal
                         : isDark
                         ? '#9AA4AF'
                         : Palette.slateGrey
@@ -98,7 +99,7 @@ export default function AppTabs() {
                         color: isFocused
                           ? isDark
                             ? Palette.chartreuse
-                            : '#0F172A'
+                            : Palette.charcoal
                           : isDark
                           ? '#9AA4AF'
                           : Palette.slateGrey,
@@ -160,12 +161,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   brandTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '900',
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
   },
   brandSubtitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
   },
   tabsRow: {
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
   tabActiveLight: {
     backgroundColor: Palette.chartreuse,
     borderWidth: 1,
-    borderColor: Palette.radioactiveGrass,
+    borderColor: 'rgba(84, 84, 84, 0.22)',
   },
   tabActiveDark: {
     backgroundColor: 'rgba(132, 221, 99, 0.16)',

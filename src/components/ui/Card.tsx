@@ -4,10 +4,10 @@ import {
   Platform,
   Pressable,
   StyleProp,
-  useColorScheme,
   View,
   ViewStyle,
 } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 interface CardProps {
   children: React.ReactNode;
@@ -33,27 +33,27 @@ export function Card({
     if (highlightZone === 'green') return Palette.radioactiveGrass;
     if (highlightZone === 'yellow') return '#EAB308';
     if (highlightZone === 'red') return '#EF4444';
-    return isDark ? '#373C44' : '#E2E8F0';
+    return isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(84, 84, 84, 0.18)';
   };
 
   const cardStyle: ViewStyle = {
-    backgroundColor: isDark ? '#22252A' : '#FFFFFF',
+    backgroundColor: isDark ? '#24272A' : '#FFFFFF',
     borderColor: getBorderColor(),
     borderWidth: bordered || highlightZone ? (highlightZone ? 1.5 : 1) : 0,
-    borderRadius: 16,
+    borderRadius: 17,
     padding: 16,
     ...Platform.select({
       web: {
         boxShadow: highlightZone === 'green' 
-          ? '0 2px 12px rgba(132, 221, 99, 0.12)' 
-          : '0 1px 4px rgba(0, 0, 0, 0.04)',
+          ? '0 6px 20px rgba(132, 221, 99, 0.18)' 
+          : '0 12px 36px rgba(84, 84, 84, 0.08)',
       },
       default: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 3,
-        elevation: 1,
+        shadowColor: '#545454',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 2,
       },
     }),
   };

@@ -1,25 +1,10 @@
-import { useSyncExternalStore } from 'react';
-import { useColorScheme as useRNColorScheme } from 'react-native';
-
-const emptySubscribe = () => () => {};
-const getClientSnapshot = () => true;
-const getServerSnapshot = () => false;
+import { ColorSchemeName } from 'react-native';
+import { useCurrentColorScheme } from '@/context/ThemeModeContext';
 
 /**
- * To support static rendering, this value needs to be re-calculated on the client side for web
+ * Color scheme hook for web
+ * Integrates with ThemeModeContext so user can toggle light/dark theme dynamically.
  */
-export function useColorScheme() {
-  const hasHydrated = useSyncExternalStore(
-    emptySubscribe,
-    getClientSnapshot,
-    getServerSnapshot
-  );
-
-  const colorScheme = useRNColorScheme();
-
-  if (hasHydrated) {
-    return colorScheme;
-  }
-
-  return 'light';
+export function useColorScheme(): ColorSchemeName {
+  return useCurrentColorScheme();
 }

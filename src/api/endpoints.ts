@@ -19,6 +19,7 @@ import {
     PvSimulationParams,
     PvSimulationResponse,
     PvVariantsResponse,
+    ScenarioMetadata,
     ScenariosListResponse,
     SmartScheduleTodayResponse,
     SystemAssumptionsResponse,
@@ -166,5 +167,13 @@ export const hackoWattApi = {
    */
   getScenarios: (): Promise<ApiResponse<ScenariosListResponse>> => {
     return apiClient.get<ScenariosListResponse>('/api/v1/scenarios/');
+  },
+
+  /**
+   * 14. POST /api/v1/scenarios/active/
+   * Zmienia aktywny scenariusz symulacji na serwerze.
+   */
+  switchScenario: (scenarioId: number): Promise<ApiResponse<ScenarioMetadata>> => {
+    return apiClient.post<ScenarioMetadata>('/api/v1/scenarios/active/', { scenario_id: scenarioId });
   },
 };

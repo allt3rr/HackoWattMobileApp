@@ -1,13 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { LogBox, Platform, useColorScheme, View } from 'react-native';
+import { LogBox, Platform, View } from 'react-native';
 
 import "../global.css";
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
-
 import { TextScaleProvider } from '@/context/TextScaleContext';
+import { ThemeModeProvider, useThemeMode } from '@/context/ThemeModeContext';
 
 // Defensive safeguard against injected browser scripts (e.g. crypto wallets/extensions)
 // attempting to access `window.ethereum.selectedAddress` before initialization on mobile web.
@@ -47,10 +47,11 @@ if (Platform.OS !== 'web') {
   SplashScreen.preventAutoHideAsync();
 }
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+function LayoutInner() {
+  const { isDark } = useThemeMode();
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <TextScaleProvider>
         <View className="h-full w-full flex-1">
           {Platform.OS !== 'web' && <AnimatedSplashOverlay />}
@@ -58,5 +59,13 @@ export default function TabLayout() {
         </View>
       </TextScaleProvider>
     </ThemeProvider>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <ThemeModeProvider>
+      <LayoutInner />
+    </ThemeModeProvider>
   );
 }

@@ -6,9 +6,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  useColorScheme,
   View,
 } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
@@ -103,7 +103,7 @@ export default function ScheduleScreen() {
     <SafeAreaView
       style={[
         styles.safeArea,
-        { backgroundColor: isDark ? '#16181A' : '#F6F8F6' },
+        { backgroundColor: isDark ? '#1A1C1E' : '#F7F6ED' },
       ]}
       edges={['top']}>
       <ScrollView
@@ -120,7 +120,7 @@ export default function ScheduleScreen() {
         }>
         {/* Header with Logo & Accessibility Controller */}
         <AppHeader
-          title="EkoDzik Mobile"
+          title="eko-dziki"
           subtitle="Harmonogram 24h & Porady Pokoleniowe"
           sourceUrl={scheduleUrl}
           onRefresh={handleRefresh}
@@ -164,7 +164,7 @@ export default function ScheduleScreen() {
               <View style={styles.timelineHeader}>
                 <View style={styles.timelineTitleGroup}>
                   <Ionicons name="time" size={20} color={Palette.radioactiveGrass} />
-                  <AppText style={[styles.timelineTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.timelineTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                     Harmonogram 24h (Dotknij godzinę)
                   </AppText>
                 </View>
@@ -189,7 +189,7 @@ export default function ScheduleScreen() {
                   };
 
                   const getSlotBorder = () => {
-                    if (isSelected) return isDark ? Palette.chartreuse : '#1C2024';
+                    if (isSelected) return isDark ? Palette.chartreuse : Palette.charcoal;
                     if (isCurrent) return Palette.radioactiveGrass;
                     if (slot.status_code === 'green') return Palette.radioactiveGrass;
                     if (slot.status_code === 'yellow') return '#FACC15';
@@ -259,7 +259,7 @@ export default function ScheduleScreen() {
                     },
                   ]}>
                   <View style={styles.selectedHourHeader}>
-                    <AppText style={[styles.selectedHourTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.selectedHourTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                       Szczegóły: {selectedHour.hour_label}
                     </AppText>
                     <StatusBadge zone={selectedHour.status_code} label={selectedHour.badge} />
@@ -270,7 +270,7 @@ export default function ScheduleScreen() {
                       {safeToFixed(selectedHour.price_per_kwh, 3)} €/kWh
                     </AppText>
                   </AppText>
-                  <AppText style={[styles.selectedHourAction, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+                  <AppText style={[styles.selectedHourAction, { color: isDark ? '#E2E8F0' : Palette.charcoal }]}>
                     💡 {selectedHour.recommended_action || getSlotActionFallback(selectedHour.status_code)}
                   </AppText>
                 </View>
@@ -282,7 +282,7 @@ export default function ScheduleScreen() {
               <>
                 <View style={styles.sectionTitleRow}>
                   <Ionicons name="sparkles" size={18} color={Palette.radioactiveGrass} />
-                  <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                     Rekomendowane Okna Czasowe
                   </AppText>
                 </View>
@@ -290,7 +290,7 @@ export default function ScheduleScreen() {
                 <View style={styles.windowsList}>
                   <Card style={styles.windowCard}>
                     <View style={styles.windowHeader}>
-                      <AppText style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         ☀️ {bestWindows.day_solar_window.label}
                       </AppText>
                       <StatusBadge variant="green" label={bestWindows.day_solar_window.hours} />
@@ -307,7 +307,7 @@ export default function ScheduleScreen() {
 
                   <Card style={styles.windowCard}>
                     <View style={styles.windowHeader}>
-                      <AppText style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.windowTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         🌙 {bestWindows.night_valley_window.label}
                       </AppText>
                       <StatusBadge variant="blue" label={bestWindows.night_valley_window.hours} />
@@ -335,7 +335,7 @@ export default function ScheduleScreen() {
             {/* Section: Porady dla Pokoleń */}
             <View style={styles.sectionTitleRow}>
               <Ionicons name="people" size={18} color={Palette.sageGreen} />
-              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+              <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                 Porady dedykowane dla pokoleń
               </AppText>
             </View>
@@ -367,7 +367,7 @@ export default function ScheduleScreen() {
                             : '#FEF9C3'
                           : isDark
                           ? 'rgba(107, 170, 117, 0.2)'
-                          : '#EDF1EE',
+                          : 'rgba(107, 170, 117, 0.15)',
                     },
                   ]}>
                   <Ionicons
@@ -388,7 +388,7 @@ export default function ScheduleScreen() {
                     }
                   />
                 </View>
-                <AppText style={[styles.tipTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.tipTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   {selectedAudience === 'dziadkowie'
                     ? 'Porady dla Dziadków w domu'
                     : selectedAudience === 'mlodziez'
@@ -407,7 +407,7 @@ export default function ScheduleScreen() {
               <>
                 <View style={styles.sectionTitleRow}>
                   <Ionicons name="pricetags" size={18} color={Palette.slateGrey} />
-                  <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                     Oficjalne Taryfy Dobowe
                   </AppText>
                 </View>
@@ -416,7 +416,7 @@ export default function ScheduleScreen() {
                   {tariffs.periods.map((t, idx) => (
                     <Card key={idx} style={styles.tariffCard}>
                       <View style={styles.tariffHeader}>
-                        <AppText style={[styles.tariffLabel, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                        <AppText style={[styles.tariffLabel, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                           {t.label}
                         </AppText>
                         <AppText

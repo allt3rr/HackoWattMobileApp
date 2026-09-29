@@ -7,9 +7,9 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
-  useColorScheme,
   View,
 } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
@@ -168,7 +168,7 @@ export default function DevicesScreen() {
     <SafeAreaView
       style={[
         styles.safeArea,
-        { backgroundColor: isDark ? '#16181A' : '#F6F8F6' },
+        { backgroundColor: isDark ? '#1A1C1E' : '#F7F6ED' },
       ]}
       edges={['top']}>
       <ScrollView
@@ -185,7 +185,7 @@ export default function DevicesScreen() {
         }>
         {/* Header with EkoDzik Mobile Logo & Accessibility Bar */}
         <AppHeader
-          title="EkoDzik Mobile"
+          title="eko-dziki"
           subtitle="Urządzenia AGD & Kalkulator Oszczędności"
           sourceUrl={sourceUrl}
           onRefresh={handleRefresh}
@@ -199,7 +199,7 @@ export default function DevicesScreen() {
             <View style={styles.calcTitleGroup}>
               <Ionicons name="calculator" size={24} color={Palette.radioactiveGrass} />
               <View style={{ flex: 1 }}>
-                <AppText style={[styles.calcTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.calcTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Kalkulator przesunięcia pracy AGD
                 </AppText>
                 <AppText style={[styles.calcSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -211,7 +211,7 @@ export default function DevicesScreen() {
           </View>
 
           {/* Device Picker Buttons */}
-          <AppText style={[styles.pickerLabel, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+          <AppText style={[styles.pickerLabel, { color: isDark ? '#E2E8F0' : Palette.charcoal }]}>
             Wybierz urządzenie do kalkulacji:
           </AppText>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.devicePillsRow}>
@@ -219,7 +219,7 @@ export default function DevicesScreen() {
               (dev) => {
                 const isSelected = selectedDeviceName === dev;
                 return (
-                  <Pressable
+                    <Pressable
                     key={dev}
                     onPress={() => setSelectedDeviceName(dev)}
                     accessibilityRole="button"
@@ -230,12 +230,12 @@ export default function DevicesScreen() {
                           ? Palette.chartreuse
                           : isDark
                           ? '#252930'
-                          : '#EDF1EE',
+                          : '#FFFFFF',
                         borderColor: isSelected
-                          ? Palette.radioactiveGrass
+                          ? 'rgba(84, 84, 84, 0.25)'
                           : isDark
                           ? '#373C44'
-                          : '#E0E5E2',
+                          : 'rgba(84, 84, 84, 0.18)',
                       },
                     ]}>
                     <AppText
@@ -243,7 +243,7 @@ export default function DevicesScreen() {
                         styles.devicePillText,
                         {
                           color: isSelected
-                            ? '#0F172A'
+                            ? Palette.charcoal
                             : isDark
                             ? '#CBD5E1'
                             : Palette.charcoal,
@@ -265,8 +265,8 @@ export default function DevicesScreen() {
               style={[
                 styles.hourBox,
                 {
-                  backgroundColor: isDark ? '#22252A' : '#F8FAFC',
-                  borderColor: isDark ? '#373C44' : '#E2E8F0',
+                  backgroundColor: isDark ? '#22252A' : '#FFFFFF',
+                  borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)',
                 },
               ]}>
               <AppText style={[styles.hourColLabel, { color: '#EF4444' }]}>
@@ -277,18 +277,18 @@ export default function DevicesScreen() {
                   onPress={() => setOrigHour((h) => Math.max(0, h - 1))}
                   accessibilityRole="button"
                   accessibilityLabel="Zmniejsz godzinę startową"
-                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>-</AppText>
+                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#F7F6ED', borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.2)', borderWidth: 1 }]}>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>-</AppText>
                 </Pressable>
-                <AppText style={styles.origHourText}>
+                <AppText style={[styles.origHourText, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   {origHour < 10 ? `0${origHour}:00` : `${origHour}:00`}
                 </AppText>
                 <Pressable
                   onPress={() => setOrigHour((h) => Math.min(23, h + 1))}
                   accessibilityRole="button"
                   accessibilityLabel="Zwiększ godzinę startową"
-                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>+</AppText>
+                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#F7F6ED', borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.2)', borderWidth: 1 }]}>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>+</AppText>
                 </Pressable>
               </View>
             </View>
@@ -302,8 +302,8 @@ export default function DevicesScreen() {
               style={[
                 styles.hourBox,
                 {
-                  backgroundColor: isDark ? '#22252A' : '#F8FAFC',
-                  borderColor: isDark ? '#373C44' : '#E2E8F0',
+                  backgroundColor: isDark ? '#22252A' : '#FFFFFF',
+                  borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)',
                 },
               ]}>
               <AppText style={[styles.hourColLabel, { color: isDark ? Palette.chartreuse : '#1F5A17' }]}>
@@ -314,8 +314,8 @@ export default function DevicesScreen() {
                   onPress={() => setTargetHour((h) => Math.max(0, h - 1))}
                   accessibilityRole="button"
                   accessibilityLabel="Zmniejsz godzinę docelową"
-                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>-</AppText>
+                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#F7F6ED', borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.2)', borderWidth: 1 }]}>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>-</AppText>
                 </Pressable>
                 <AppText style={[styles.targetHourText, { color: isDark ? Palette.chartreuse : Palette.sageGreen }]}>
                   {targetHour < 10 ? `0${targetHour}:00` : `${targetHour}:00`}
@@ -324,8 +324,8 @@ export default function DevicesScreen() {
                   onPress={() => setTargetHour((h) => Math.min(23, h + 1))}
                   accessibilityRole="button"
                   accessibilityLabel="Zwiększ godzinę docelową"
-                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#EDF1EE' }]}>
-                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>+</AppText>
+                  style={[styles.stepperBtn, { backgroundColor: isDark ? '#2B3037' : '#F7F6ED', borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.2)', borderWidth: 1 }]}>
+                  <AppText style={[styles.stepperBtnText, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>+</AppText>
                 </Pressable>
               </View>
             </View>
@@ -339,8 +339,8 @@ export default function DevicesScreen() {
               style={[
                 styles.resultBox,
                 {
-                  borderColor: isDark ? '#373C44' : '#E0E5E2',
-                  backgroundColor: isDark ? '#1C1F24' : '#F8FAFC',
+                  borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)',
+                  backgroundColor: isDark ? '#1C1F24' : '#FFFFFF',
                 },
               ]}>
               <View style={styles.resultMetricsRow}>
@@ -369,7 +369,7 @@ export default function DevicesScreen() {
                 </View>
               </View>
 
-              <AppText style={[styles.resultRecText, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+              <AppText style={[styles.resultRecText, { color: isDark ? '#E2E8F0' : Palette.charcoal }]}>
                 💡 {safeString(simResult.recommendation, 'Zalecane przesunięcie cyklu.')}
               </AppText>
             </View>
@@ -381,7 +381,7 @@ export default function DevicesScreen() {
         {/* ============================================================ */}
         <View style={styles.sectionTitleRow}>
           <Ionicons name="apps" size={18} color={Palette.sageGreen} />
-          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
             Karty sprzętów domowych (Przewodnik)
           </AppText>
         </View>
@@ -404,7 +404,7 @@ export default function DevicesScreen() {
                         />
                       </View>
                       <View style={{ flex: 1 }}>
-                        <AppText style={[styles.deviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                        <AppText style={[styles.deviceName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                           {enriched.device}
                         </AppText>
                         <AppText style={[styles.deviceKwh, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -459,7 +459,7 @@ export default function DevicesScreen() {
         {/* ============================================================ */}
         <View style={styles.sectionTitleRow}>
           <Ionicons name="sync" size={18} color={Palette.charcoal} />
-          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
             Zrealizowane cykle elastyczne (Historia)
           </AppText>
         </View>
@@ -475,7 +475,7 @@ export default function DevicesScreen() {
               styles.filterInput,
               {
                 borderColor: isDark ? '#373C44' : '#E2E8F0',
-                color: isDark ? '#FFFFFF' : '#1C2024',
+                color: isDark ? '#FFFFFF' : Palette.charcoal,
                 backgroundColor: isDark ? '#22252A' : '#FFFFFF',
               },
             ]}
@@ -501,7 +501,7 @@ export default function DevicesScreen() {
                 <View style={styles.eventHeader}>
                   <View style={styles.eventTitleGroup}>
                     <Ionicons name="calendar-outline" size={16} color={Palette.radioactiveGrass} />
-                    <AppText style={[styles.eventDeviceName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                    <AppText style={[styles.eventDeviceName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                       {evt.device}
                     </AppText>
                   </View>

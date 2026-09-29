@@ -1,6 +1,7 @@
 import React from 'react';
 import { Palette } from '@/constants/theme';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AppText } from '@/components/ui/AppText';
 
 interface MetricTileProps {
@@ -11,6 +12,7 @@ interface MetricTileProps {
   trend?: 'up' | 'down' | 'stable';
   trendValue?: string;
   accentColor?: string;
+  topBorderColor?: string;
 }
 
 export function MetricTile({
@@ -21,6 +23,7 @@ export function MetricTile({
   trend,
   trendValue,
   accentColor,
+  topBorderColor,
 }: MetricTileProps) {
   const isDark = useColorScheme() === 'dark';
 
@@ -29,8 +32,14 @@ export function MetricTile({
       style={[
         styles.container,
         {
-          backgroundColor: isDark ? '#22252A' : '#FFFFFF',
-          borderColor: isDark ? '#373C44' : '#E2E8F0',
+          backgroundColor: isDark ? '#24272A' : '#FFFFFF',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(84, 84, 84, 0.18)',
+          ...(topBorderColor
+            ? {
+                borderTopWidth: 4,
+                borderTopColor: topBorderColor,
+              }
+            : {}),
         },
       ]}>
       <AppText style={[styles.label, { color: isDark ? '#A0AAB3' : Palette.slateGrey }]}>
@@ -41,7 +50,7 @@ export function MetricTile({
         <AppText
           style={[
             styles.value,
-            { color: accentColor ?? (isDark ? '#FFFFFF' : '#1C2024') },
+            { color: accentColor ?? (isDark ? '#EDEDED' : Palette.charcoal) },
           ]}>
           {value != null ? String(value) : ''}
         </AppText>

@@ -6,9 +6,9 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  useColorScheme,
   View,
 } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { hackoWattApi } from '@/api/endpoints';
@@ -112,7 +112,7 @@ export default function AnalyticsScreen() {
               <View key={key} style={styles.catRow}>
                 <View style={styles.catLeft}>
                   <View style={[styles.catDot, { backgroundColor: cat.color }]} />
-                  <AppText style={[styles.catName, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.catName, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                     {cat.label}
                   </AppText>
                 </View>
@@ -136,7 +136,7 @@ export default function AnalyticsScreen() {
     <SafeAreaView
       style={[
         styles.safeArea,
-        { backgroundColor: isDark ? '#16181A' : '#F6F8F6' },
+        { backgroundColor: isDark ? '#1A1C1E' : '#F7F6ED' },
       ]}
       edges={['top']}>
       <ScrollView
@@ -153,7 +153,7 @@ export default function AnalyticsScreen() {
         }>
         {/* Header with EkoDzik Mobile Logo & Accessibility Bar */}
         <AppHeader
-          title="EkoDzik Mobile"
+          title="eko-dziki"
           subtitle="Zużycie, Prognozy & Metryki Modelu"
           sourceUrl={historyUrl}
           onRefresh={handleRefresh}
@@ -167,7 +167,7 @@ export default function AnalyticsScreen() {
             <View style={styles.forecastTitleGroup}>
               <Ionicons name="trending-up" size={22} color={Palette.radioactiveGrass} />
               <View style={{ flex: 1 }}>
-                <AppText style={[styles.forecastTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.forecastTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Prognoza Zapotrzebowania
                 </AppText>
                 <AppText style={[styles.forecastSubtitle, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -213,7 +213,7 @@ export default function AnalyticsScreen() {
               {/* Hourly Chart preview */}
               {forecastData.items && forecastData.items.length > 0 ? (
                 <>
-                  <AppText style={[styles.chartSectionLabel, { color: isDark ? '#E2E8F0' : '#1C2024' }]}>
+                  <AppText style={[styles.chartSectionLabel, { color: isDark ? '#E2E8F0' : Palette.charcoal }]}>
                     Wykres godzinowy prognozy (kWh):
                   </AppText>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chartScroll}>
@@ -254,7 +254,7 @@ export default function AnalyticsScreen() {
               {/* Peak Explanations */}
               {forecastData.peaks && forecastData.peaks.length > 0 ? (
                 <View style={styles.peaksSection}>
-                  <AppText style={[styles.peaksHeader, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.peaksHeader, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                     Zidentyfikowane szczyty i wyjaśnienia:
                   </AppText>
                   {forecastData.peaks.map((peak, idx) => {
@@ -309,7 +309,7 @@ export default function AnalyticsScreen() {
               <View style={styles.metricsTitleGroup}>
                 <Ionicons name="shield-checkmark" size={20} color={Palette.radioactiveGrass} />
                 <View style={{ flex: 1 }}>
-                  <AppText style={[styles.metricsTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                  <AppText style={[styles.metricsTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                     Dokładność i Metryki Modelu AI
                   </AppText>
                   <AppText style={[styles.metricsPeriod, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -342,7 +342,7 @@ export default function AnalyticsScreen() {
         {/* ============================================================ */}
         <View style={styles.sectionTitleRow}>
           <Ionicons name="bar-chart" size={18} color={Palette.sageGreen} />
-          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+          <AppText style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
             Historia zużycia z podziałem na 6 kategorii
           </AppText>
         </View>
@@ -354,7 +354,7 @@ export default function AnalyticsScreen() {
             {/* 6-Category Breakdown Card */}
             <Card style={styles.breakdownCard}>
               <View style={{ gap: 2 }}>
-                <AppText style={[styles.breakdownTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.breakdownTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Struktura zużycia w okresie
                 </AppText>
                 <AppText style={[styles.breakdownSub, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -371,7 +371,7 @@ export default function AnalyticsScreen() {
             {/* Daily Records with Pagination */}
             <Card style={styles.recordsCard}>
               <View style={styles.recordsHeader}>
-                <AppText style={[styles.recordsTitle, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                <AppText style={[styles.recordsTitle, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                   Godzinowy rejestr pomiarów
                 </AppText>
                 <AppText style={[styles.pageIndicator, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -390,7 +390,7 @@ export default function AnalyticsScreen() {
                       { borderBottomColor: isDark ? '#2E333A' : '#E2E8F0' },
                     ]}>
                     <View style={{ flex: 1, minWidth: 160 }}>
-                      <AppText style={[styles.recordDate, { color: isDark ? '#FFFFFF' : '#1C2024' }]}>
+                      <AppText style={[styles.recordDate, { color: isDark ? '#FFFFFF' : Palette.charcoal }]}>
                         {dateStr}{tempStr}
                       </AppText>
                       <AppText style={[styles.recordCategories, { color: isDark ? '#9AA4AF' : Palette.slateGrey }]}>
@@ -416,15 +416,15 @@ export default function AnalyticsScreen() {
                   style={[
                     styles.pageBtn,
                     {
-                      borderColor: isDark ? '#373C44' : '#CBD5E1',
+                      borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.2)',
                       opacity: historyData.pagination.has_previous ? 1 : 0.4,
-                      backgroundColor: isDark ? '#2B3037' : '#EDF1EE',
+                      backgroundColor: isDark ? '#2B3037' : '#FFFFFF',
                     },
                   ]}>
                   <Ionicons
                     name="chevron-back"
                     size={18}
-                    color={historyData.pagination.has_previous ? Palette.radioactiveGrass : Palette.slateGrey}
+                    color={historyData.pagination.has_previous ? (isDark ? Palette.chartreuse : Palette.charcoal) : Palette.slateGrey}
                   />
                   <AppText
                     style={[
@@ -433,7 +433,7 @@ export default function AnalyticsScreen() {
                         color: historyData.pagination.has_previous
                           ? isDark
                             ? Palette.chartreuse
-                            : Palette.sageGreen
+                            : Palette.charcoal
                           : Palette.slateGrey,
                       },
                     ]}>
@@ -449,9 +449,9 @@ export default function AnalyticsScreen() {
                   style={[
                     styles.pageBtn,
                     {
-                      borderColor: isDark ? '#373C44' : '#CBD5E1',
+                      borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.2)',
                       opacity: historyData.pagination.has_next ? 1 : 0.4,
-                      backgroundColor: isDark ? '#2B3037' : '#EDF1EE',
+                      backgroundColor: isDark ? '#2B3037' : '#FFFFFF',
                     },
                   ]}>
                   <AppText
@@ -461,7 +461,7 @@ export default function AnalyticsScreen() {
                         color: historyData.pagination.has_next
                           ? isDark
                             ? Palette.chartreuse
-                            : Palette.sageGreen
+                            : Palette.charcoal
                           : Palette.slateGrey,
                       },
                     ]}>
@@ -470,7 +470,7 @@ export default function AnalyticsScreen() {
                   <Ionicons
                     name="chevron-forward"
                     size={18}
-                    color={historyData.pagination.has_next ? Palette.radioactiveGrass : Palette.slateGrey}
+                    color={historyData.pagination.has_next ? (isDark ? Palette.chartreuse : Palette.charcoal) : Palette.slateGrey}
                   />
                 </Pressable>
               </View>

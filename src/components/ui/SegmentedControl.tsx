@@ -4,9 +4,9 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  useColorScheme,
   View,
 } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AppText } from '@/components/ui/AppText';
 
 export interface SegmentOption<T extends string | number> {
@@ -33,8 +33,8 @@ export function SegmentedControl<T extends string | number>({
       style={[
         styles.container,
         {
-          backgroundColor: isDark ? '#1C1F24' : '#EDF1EE',
-          borderColor: isDark ? '#373C44' : '#E0E5E2',
+          backgroundColor: isDark ? '#1C1F24' : '#EAE8DE',
+          borderColor: isDark ? '#373C44' : 'rgba(84, 84, 84, 0.18)',
         },
       ]}>
       {options.map((opt) => {
@@ -49,15 +49,15 @@ export function SegmentedControl<T extends string | number>({
               styles.item,
               isSelected
                 ? {
-                    backgroundColor: isDark ? Palette.charcoal : '#FFFFFF',
+                    backgroundColor: isDark ? '#2D3238' : '#FFFFFF',
                     borderWidth: 1,
-                    borderColor: isDark ? Palette.radioactiveGrass : Palette.sageGreen,
+                    borderColor: isDark ? Palette.radioactiveGrass : 'rgba(84, 84, 84, 0.2)',
                     ...Platform.select({
                       web: {
                         boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.08)',
                       },
                       default: {
-                        shadowColor: '#000',
+                        shadowColor: '#545454',
                         shadowOffset: { width: 0, height: 1 },
                         shadowOpacity: 0.08,
                         shadowRadius: 2,
@@ -74,7 +74,7 @@ export function SegmentedControl<T extends string | number>({
                   color: isSelected
                     ? isDark
                       ? Palette.chartreuse
-                      : '#1C2024'
+                      : Palette.charcoal
                     : isDark
                     ? '#9AA4AF'
                     : Palette.slateGrey,
