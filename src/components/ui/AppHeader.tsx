@@ -3,7 +3,6 @@ import { View, StyleSheet, useColorScheme, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { AppLogo } from '@/components/ui/AppLogo';
 import { AppText } from '@/components/ui/AppText';
-import { ApiStatusIndicator } from '@/components/ui/ApiStatusIndicator';
 import { AccessibilityBar } from '@/components/ui/AccessibilityBar';
 import { Palette } from '@/constants/theme';
 
@@ -18,15 +17,13 @@ interface AppHeaderProps {
 export const AppHeader: React.FC<AppHeaderProps> = ({
   title = 'EkoDzik Mobile',
   subtitle = 'Inteligentna energia dla domu',
-  sourceUrl,
-  onRefresh,
   showAccessibility = true,
 }) => {
   const isDark = useColorScheme() === 'dark';
 
   return (
     <View style={styles.container}>
-      {/* Brand row with logo, title, and status pill */}
+      {/* Brand row with logo and title */}
       <View style={styles.brandRow}>
         <Pressable onPress={() => router.push('/')} style={styles.brandLeft}>
           <AppLogo size={38} />
@@ -43,10 +40,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             </AppText>
           </View>
         </Pressable>
-
-        <View style={styles.statusWrap}>
-          <ApiStatusIndicator sourceUrl={sourceUrl} onRefresh={onRefresh} />
-        </View>
       </View>
 
       {/* Global Text Size / Accessibility Controller */}
@@ -88,10 +81,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 1,
   },
-  statusWrap: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
 });
 
 export default AppHeader;
+

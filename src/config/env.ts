@@ -1,6 +1,6 @@
 /**
  * Environment configuration and dynamic settings for HackoWatt API
- * Connects directly to live backend server via Bearer Token authorization.
+ * Connects directly to backend server via Bearer Token authorization.
  */
 
 import Constants from 'expo-constants';
@@ -36,47 +36,59 @@ export function getExpoHostIp(): string | null {
 }
 
 /**
- * Resolves localhost URL automatically:
- * - On physical devices: maps localhost/127.0.0.1 to Expo host IP or LAN fallback (e.g. 192.168.0.161)
- * - On Android emulators: maps localhost/127.0.0.1 to 10.0.2.2
- * - On Web and iOS simulators: keeps localhost as is.
+ * Determines the direct backend URL:
+ * 1. Web browser: connects directly to port 8000 on the current browser host (e.g. localhost or LAN IP).
+ * 2. Explicit EXPO_PUBLIC_API_URL if configured in .env.
+ * 3. Mobile physical device (Expo Go): connects to the development host IP on port 8000.
+ * 4. Fallback: http://192.168.0.161:8000.
  */
-export function resolvePlatformUrl(url: string): string {
-  if (!url) return url;
-
-  const isPhysical = Device.isDevice;
-
-  if (isPhysical) {
-    const devHost = getExpoHostIp() || '192.168.0.161';
-    return url
-      .replace('://localhost', `://${devHost}`)
-      .replace('://127.0.0.1', `://${devHost}`);
+export function resolveApiBaseUrl(): string {
+  // If in web browser (desktop or mobile browser):
+  if (typeof window !== 'undefined' && window.location?.hostname) {
+    const host = window.location.hostname;
+    if (host && host.length > 0) {
+      return `http://${host}:8000`;
+    }
   }
 
-  if (Platform.OS === 'android') {
-    return url
-      .replace('://localhost', '://10.0.2.2')
-      .replace('://127.0.0.1', '://10.0.2.2');
+  // If explicit environment variable is defined:
+  const envUrl =
+    process.env.EXPO_PUBLIC_API_URL ||
+    process.env.EXPO_PUBLIC_API_BASE_URL ||
+    process.env.EXPO_PUBLIC_BACKEND_URL;
+
+  if (envUrl && envUrl.trim().length > 0) {
+    return envUrl.trim();
   }
 
-  return url;
+  // Android emulator
+  if (Platform.OS === 'android' && !Device.isDevice) {
+    return 'http://10.0.2.2:8000';
+  }
+
+  // Physical device running Expo Go
+  const devHost = getExpoHostIp();
+  if (devHost) {
+    return `http://${devHost}:8000`;
+  }
+
+  return 'http://192.168.0.161:8000';
 }
 
-const DEFAULT_RAW_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  process.env.EXPO_PUBLIC_API_BASE_URL ||
-  process.env.EXPO_PUBLIC_BACKEND_URL ||
-  'http://localhost:8000';
+export function resolvePlatformUrl(url: string): string {
+  if (!url) return resolveApiBaseUrl();
+  return url;
+}
 
 const DEFAULT_BEARER_TOKEN =
   process.env.EXPO_PUBLIC_API_TOKEN ||
   process.env.EXPO_PUBLIC_BEARER_TOKEN ||
   process.env.EXPO_PUBLIC_API_KEY ||
-  '';
+  'hackowatt-demo-mobile-key-2026';
 
 class ConfigManager {
   private config: AppEnvConfig = {
-    apiBaseUrl: DEFAULT_RAW_URL,
+    apiBaseUrl: resolveApiBaseUrl(),
     bearerToken: DEFAULT_BEARER_TOKEN,
     apiKey: DEFAULT_BEARER_TOKEN,
   };
@@ -88,7 +100,7 @@ class ConfigManager {
   }
 
   public getResolvedBaseUrl(): string {
-    return resolvePlatformUrl(this.config.apiBaseUrl);
+    return resolveApiBaseUrl();
   }
 
   public set(partial: Partial<AppEnvConfig>): void {
@@ -113,10 +125,11 @@ class ConfigManager {
 
   public getMaskedToken(): string {
     const token = this.config.bearerToken;
-    if (!token) return '(Brak tokenu w .env)';
+    if (!token) return '(Brak tokenu)';
     if (token.length <= 8) return '****';
     return `${token.slice(0, 4)}••••${token.slice(-4)}`;
   }
 }
 
 export const envConfig = new ConfigManager();
+
